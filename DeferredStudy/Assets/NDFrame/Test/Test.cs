@@ -1,15 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class Test1 : Singleton<Test1>
-{
-    public string text = "222";
-}
 public class Test : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log(Test1.Instance.text);
+        Debug.Log(GameRoot.Instance.str);
     }
 }
