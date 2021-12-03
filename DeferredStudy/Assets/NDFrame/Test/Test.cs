@@ -7,6 +7,6 @@ public class Test : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log(GameRoot.Instance.str);
+        
     }
 }
