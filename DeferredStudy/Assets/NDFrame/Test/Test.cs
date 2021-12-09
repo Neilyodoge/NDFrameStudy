@@ -5,16 +5,22 @@ using System;
 
 public class Test : MonoBehaviour
 {
-    public GameObject Cube;
     void Start()
     {
         
     }
+
+    private TestPool p;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            PoolManager.Instance.GetGameObject<TestPool>(Cube);
+            p = PoolManager.Instance.GetObject<TestPool>();
+            p.Init();   // 缓存起来
+        }
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            p.Dead();
         }
     }
 }
