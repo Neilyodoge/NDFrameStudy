@@ -29,8 +29,12 @@ Shader "Neilyodog/Water"
         _DistortionSpeed("扭曲速度",Vector) = (0,0,0,0)
 
         [Space(10)]
+        [Header(Caustic)]
+        _CausticTex("焦散贴图", 2D) = "white"{}
+
+        [Space(10)]
         [Header(Foam)]
-        _FoamSpeed("泡沫速度",Vector) = (0,0,0,0)
+        _FoamSpeed("泡沫速度/焦散速度",Vector) = (0,0,0,0)
         _FoamTex("泡沫纹理",2D) = "white"{}
         _FoamTint("泡沫颜色",color) = (1,1,1,1)
         _FoamRange("泡沫范围",range(0,1)) = 1
@@ -87,6 +91,7 @@ Shader "Neilyodog/Water"
             half _Specular, _Smoothness;
             float _BumpScale;
             half _WaterAlpha;
+            half4 _CausticTex_ST;
             CBUFFER_END
 
             TEXTURE2D(_BumpTex);    SAMPLER(sampler_BumpTex);
@@ -95,6 +100,7 @@ Shader "Neilyodog/Water"
             TEXTURE2D(_CameraDepthTexture);     SAMPLER(sampler_CameraDepthTexture);
             TEXTURE2D(_CameraOpaqueTexture);    SAMPLER(sampler_CameraOpaqueTexture);
             TEXTURECUBE(_RefectionTex);         SAMPLER(sampler_RefectionTex);
+            TEXTURE2D(_CausticTex);             SAMPLER(sampler_CausticTex);
 
             Varyings vert(Attributes v)
             {
@@ -146,6 +152,18 @@ Shader "Neilyodog/Water"
                 depthWater = saturate(pow(depthWater,_DepthIntensity));
 
             // 焦散
+                half4 depthVS = 1; // 观察空间下深度坐标点
+                depthVS.xy = i.PositionVS * depthScene / -i.PositionVS.z;
+                depthVS.z = depthScene;
+                half3 depthWS = mul(unity_CameraToWorld ,depthVS);
+                float2 causticUV = float2(frac(_FoamSpeed.z * _Time.y), frac(_FoamSpeed.w * _Time.y))        
+                                                + (depthWS.xz * _CausticTex_ST.xy + _CausticTex_ST.zw);
+                half4 causticTex = SAMPLE_TEXTURE2D(_CausticTex,sampler_CausticTex,causticUV);      
+                float2 causticUV2 = float2(frac(_FoamSpeed.z * _Time.y * 0.5), frac(-_FoamSpeed.w * _Time.y * 0.5))        
+                                                + (depthWS.xz * _CausticTex_ST.xy + _CausticTex_ST.zw);
+                half4 causticTex2 = SAMPLE_TEXTURE2D(_CausticTex,sampler_CausticTex,causticUV2.yx);    
+
+                return causticTex * causticTex2;
 
             // Distortion
                 float2 distortionUV = float2(frac(_DistortionSpeed.x * _Time.y), frac(_DistortionSpeed.y * _Time.y))

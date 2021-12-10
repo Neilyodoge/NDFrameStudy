@@ -10,10 +10,10 @@ public class Test : MonoBehaviour
         
     }
 
-    private TestPool p;
+    // private TestPool p;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+/*        if (Input.GetKeyDown(KeyCode.A))
         {
             p = PoolManager.Instance.GetObject<TestPool>();
             p.Init();   // 缓存起来
@@ -21,6 +21,6 @@ public class Test : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             p.Dead();
-        }
+        }*/
     }
 }

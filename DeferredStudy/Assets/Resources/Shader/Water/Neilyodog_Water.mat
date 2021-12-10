@@ -27,6 +27,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: e51de0681d11c1f41a6b32d760aca484, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _CausticTex:
+        m_Texture: {fileID: 2800000, guid: fc200d895de957f49936b83f87de0ea4, type: 3}
+        m_Scale: {x: 0.5, y: 0.5}
+        m_Offset: {x: 0, y: 0}
     - _DistortionTex:
         m_Texture: {fileID: 2800000, guid: 975dc4420bbd04e4294a6498c111e259, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -61,7 +65,7 @@ Material:
     - _offset: 8
     m_Colors:
     - _DistortionSpeed: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
-    - _FoamSpeed: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _FoamSpeed: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
     - _FoamTint: {r: 0.30588233, g: 0.64386964, b: 1, a: 1}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalSpeed: {r: 0.01, g: 0.02, b: -0.02, a: 0.01}
