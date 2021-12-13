@@ -1,10 +1,14 @@
 Shader "Neilyodog/Water"
 {
-    // 现在颜色混合有问题，混合不出很浅的颜色
-    // 泡沫和深度没分开
+    // Neilyodog 2021.12.13
+    // 混合部分有一些问题
+        // 1.透明度控制并不是很理想
+        // 2.泡沫和深度没分开
+    // cube反射暂时没网上叠
+    // fresnel 特性没写
     Properties
     { 
-        _WaterAlpha("Alpha",range(0,1)) = 0.5
+        _WaterAlpha("Alpha",float) = 0.5    // 没用
         _WaterColor("水颜色",color) = (1,1,1,1)
         _WaterDepthColor("深度颜色",color) = (1,1,1,1)
         _BumpTex("Normal", 2D) = "white"{}
@@ -31,6 +35,7 @@ Shader "Neilyodog/Water"
         [Space(10)]
         [Header(Caustic)]
         _CausticTex("焦散贴图", 2D) = "white"{}
+        _CausticIntensity("焦散强度",float) = 1
 
         [Space(10)]
         [Header(Foam)]
@@ -92,6 +97,7 @@ Shader "Neilyodog/Water"
             float _BumpScale;
             half _WaterAlpha;
             half4 _CausticTex_ST;
+            half _CausticIntensity;
             CBUFFER_END
 
             TEXTURE2D(_BumpTex);    SAMPLER(sampler_BumpTex);
@@ -149,26 +155,14 @@ Shader "Neilyodog/Water"
                 half depthTex = SAMPLE_TEXTURE2D(_CameraDepthTexture,sampler_CameraDepthTexture,ScreenUV).r;
                 half depthScene = LinearEyeDepth(depthTex,_ZBufferParams);
                 half depthWater = depthScene + i.PositionVS.z;  // 相当于把本来深度为0的位置为near改到水面了，变向加强对比度
-                depthWater = saturate(pow(depthWater,_DepthIntensity));
+                // return half4(saturate(depthWater*_WaterAlpha).xxx,1);
+                depthWater = saturate(abs(depthWater)*_DepthIntensity);
 
-            // 焦散
-                half4 depthVS = 1; // 观察空间下深度坐标点
-                depthVS.xy = i.PositionVS * depthScene / -i.PositionVS.z;
-                depthVS.z = depthScene;
-                half3 depthWS = mul(unity_CameraToWorld ,depthVS);
-                float2 causticUV = float2(frac(_FoamSpeed.z * _Time.y), frac(_FoamSpeed.w * _Time.y))        
-                                                + (depthWS.xz * _CausticTex_ST.xy + _CausticTex_ST.zw);
-                half4 causticTex = SAMPLE_TEXTURE2D(_CausticTex,sampler_CausticTex,causticUV);      
-                float2 causticUV2 = float2(frac(_FoamSpeed.z * _Time.y * 0.5), frac(-_FoamSpeed.w * _Time.y * 0.5))        
-                                                + (depthWS.xz * _CausticTex_ST.xy + _CausticTex_ST.zw);
-                half4 causticTex2 = SAMPLE_TEXTURE2D(_CausticTex,sampler_CausticTex,causticUV2.yx);    
-
-                return causticTex * causticTex2;
-
+        
             // Distortion
                 float2 distortionUV = float2(frac(_DistortionSpeed.x * _Time.y), frac(_DistortionSpeed.y * _Time.y))
                                             + (i.uv * _DistortionTex_ST.xy + _DistortionTex_ST.zw);
-                half distortionTex = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV).xy;
+                half2 distortionTex = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV).xy;
                 float2 opaqueUV = ScreenUV + _DistortionIntensity * distortionTex;
 
                 half depthDistortionTex = SAMPLE_TEXTURE2D(_CameraDepthTexture,sampler_CameraDepthTexture,opaqueUV).r;
@@ -180,27 +174,38 @@ Shader "Neilyodog/Water"
                 half4 camColorTex = SAMPLE_TEXTURE2D(_CameraOpaqueTexture,sampler_CameraOpaqueTexture,opaqueUV);
                 // return camColorTex;
 
+            // 焦散
+                half4 depthVS = 1; // 观察空间下深度坐标点
+                depthVS.xy = i.PositionVS.xy * depthDistortionScene / -i.PositionVS.z; // 用 depthDistortionScene 来让焦散扭曲
+                depthVS.z = depthScene;
+                half4 depthWS = mul(unity_CameraToWorld ,depthVS);
+                float2 causticUV = float2(frac(_FoamSpeed.z * _Time.y), frac(_FoamSpeed.w * _Time.y))        
+                                                + (depthWS.xz * _CausticTex_ST.xy + _CausticTex_ST.zw) + (depthWS.y * 0.1);
+                half4 causticTex = SAMPLE_TEXTURE2D(_CausticTex,sampler_CausticTex,causticUV);      
+                float2 causticUV2 = float2(frac(_FoamSpeed.z * _Time.y * 0.5), frac(-_FoamSpeed.w * _Time.y * 0.5))        
+                                                + (depthWS.xz  * _CausticTex_ST.xy + _CausticTex_ST.zw) + (depthWS.y * 0.1);
+                half4 causticTex2 = SAMPLE_TEXTURE2D(_CausticTex,sampler_CausticTex,causticUV2.yx);    
+                half4 finalCaustic = min(causticTex,causticTex2); //causticTex * causticTex2;
+
             // highLight
                 float2 distortionUV2 = float2(frac(_DistortionSpeed.z * _Time.y), frac(_DistortionSpeed.w * _Time.y))
                                                 + (i.uv * _DistortionTex_ST.xy + _DistortionTex_ST.zw);
-                half distortionTex2 = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV2.yx);
-                half waterNormal = max(distortionTex, distortionTex2);
+                half distortionTex2 = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV2.yx).x;
+                half waterNormal = max(distortionTex.x, distortionTex2);
                 // Blinn-Phong
                 // Ks = 强度; Shininess = 范围
                 // Specular = SpecularColor * Ks * pow(max(0,dot(N,H)), Shininess)
                 Light light = GetMainLight();
-                half3 N = normalize(bumpWS);//waterNormal;// normalize(i.NormalWS);
+                half3 N = normalize(bumpWS);    //waterNormal;// normalize(i.NormalWS);
                 half3 L = light.direction;
                 half3 V = normalize(_WorldSpaceCameraPos.xyz - i.PositionWS);
                 half3 H = normalize(V + L);
                 half NoH = saturate(dot(N,H));
-                half4 specular = _SpecularColor * _Specular * pow(NoH,_Smoothness);
-                // return half4(NoH.xxx,1);
+                half4 specular = _SpecularColor * max(0,_Specular) * pow(NoH,_Smoothness);
 
             // Refection
                 float3 refectionUV = reflect(N,-V);
                 half4 refectionTex = SAMPLE_TEXTURECUBE(_RefectionTex,sampler_RefectionTex,refectionUV);
-                // return refectionTex;
                 ///////// 改写ref怎么叠加了
                 
             // foam
@@ -209,12 +214,13 @@ Shader "Neilyodog/Water"
                 half foam = smoothstep(0,foamTex.r * _FoamRange,depthWater);
 
             // color blend
-                half4 Tint = lerp(_WaterDepthColor,_WaterColor,depthWater);     // 深水区浅水区颜色区分
-                half4 addfoam = lerp(_FoamTint,Tint * camColorTex,foam);        // 叠加Foam,叠加扭曲
-                half4 addHighLight = addfoam + specular;
-                // return camColorTex;
-                return addHighLight;
-                // return half4(addHighLight.xyz,_WaterAlpha);
+                half4 Tint = lerp(_WaterDepthColor,_WaterColor,depthWater);             // 深水区浅水区颜色区分
+                Tint = lerp(_FoamTint,Tint * camColorTex,foam);                         // 叠加Foam,叠加扭曲
+                Tint += specular;                                                       // 加入高光部分
+                Tint.rgb += finalCaustic.rgb * (1-depthWater) * _CausticIntensity;      // 加入焦散和焦散遮罩
+                Tint.rgb = MixFog(Tint.rgb,i.fogCoord);                                 // 混合Fog
+                return saturate(Tint);
+
             }
             ENDHLSL
         }

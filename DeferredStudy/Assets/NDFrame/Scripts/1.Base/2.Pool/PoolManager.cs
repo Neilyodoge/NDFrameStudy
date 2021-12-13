@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,7 +52,7 @@ public class PoolManager : ManagerBase<PoolManager>
             obj = GameObject.Instantiate(prefab,parent);   // 根据父级实例化
             obj.name = name;                               // 正常实例化之后是有个 name(clone) 的，这里是为了名字一样
         }
-        return null;
+        return obj;
     }
 
     /// <summary>
@@ -124,13 +125,60 @@ public class PoolManager : ManagerBase<PoolManager>
     }
     #endregion
 
-
-    public void Clear(bool wantClearCObject = true) // 跨场景的时候清空
+    #region 删除逻辑
+    /// <summary>
+    /// 删除全部
+    /// </summary>
+    /// <param name="clearGameObject">是否删除游戏物体</param>
+    /// <param name="ClearCObject">是否删除普通C#对象</param>
+    public void Clear(bool clearGameObject = true, bool ClearCObject = true) // 跨场景的时候清空
     {
-        gameObjectPoolDic.Clear();
-        if (wantClearCObject)         // 判断C#数据要不要清理
+        // 清理GameObject
+        if (clearGameObject)
+        {   // 清理GameRoot的子集PoolRoot底下的全部对象
+            for (int i = 0; i < poolRootObj.transform.childCount; i++)
+            {
+                Destroy(poolRootObj.transform.GetChild(0).gameObject); // 挨个删除每一个。这里 GetChild() 0 即可，因为删除的时候，子物体的数量编号都发生了变化，所以删除第一个就行 
+            }
+            gameObjectPoolDic.Clear();
+        }
+        // 清理字典物体
+        if (ClearCObject)         // 判断C#数据要不要清理
         {
             ObjectPoolDic.Clear();
         }
     }
+
+    public void ClearAllGameObject()                   // 清楚全部 Object
+    {
+        Clear(true, false);
+    }
+
+    public void ClearGameObject(string prefabName)  // 逐名字删除
+    {
+        Transform go = poolRootObj.transform.Find(prefabName);  // 这里如果直接拿GameObject的话，Find有可能是Null，导致没法.gameObject的
+        if (go != null)
+        {
+            Destroy(go.gameObject);                             // 所以在这里先拿到Transform再.gameObject
+            gameObjectPoolDic.Remove(prefabName);
+        }
+    }
+    public void ClearGameObject(GameObject prefab)  // 逐prefab删除
+    {
+        ClearGameObject(prefab.name);
+    }
+    public void ClearAllObject()
+    {
+        Clear(false, true);
+    }
+    public void ClearObject<T>()
+    {
+        ObjectPoolDic.Remove(typeof(T).FullName);
+    }
+    public void ClearObject(Type type)
+    {
+        ObjectPoolDic.Remove(type.FullName);
+    }
+    #endregion
+
 }

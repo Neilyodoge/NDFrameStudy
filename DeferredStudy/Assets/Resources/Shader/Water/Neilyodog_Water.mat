@@ -29,10 +29,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _CausticTex:
         m_Texture: {fileID: 2800000, guid: fc200d895de957f49936b83f87de0ea4, type: 3}
-        m_Scale: {x: 0.5, y: 0.5}
+        m_Scale: {x: 0.2, y: 0.2}
         m_Offset: {x: 0, y: 0}
     - _DistortionTex:
-        m_Texture: {fileID: 2800000, guid: 975dc4420bbd04e4294a6498c111e259, type: 3}
+        m_Texture: {fileID: 2800000, guid: 50bca05c42d3cac48ab33220c67a8a9f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamNoise:
@@ -54,14 +54,15 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 0.5
-    - _DepthIntensity: 1.06
-    - _DistortionIntensity: 0.01
+    - _CausticIntensity: 9.41
+    - _DepthIntensity: 0.72
+    - _DistortionIntensity: 0.02
     - _FoamRange: 0.26
     - _NormalScale: 1
     - _RefectionIntensity: 1
     - _Smoothness: 422.5
     - _Specular: 1
-    - _WaterAlpha: 0.5
+    - _WaterAlpha: 1
     - _offset: 8
     m_Colors:
     - _DistortionSpeed: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
@@ -72,5 +73,5 @@ Material:
     - _SpecularColor: {r: 0.66723037, g: 0.8243984, b: 0.9622642, a: 1}
     - _Speed: {r: 0.1, g: 0.01, b: 0, a: 1}
     - _WaterColor: {r: 0.36320752, g: 0.7848112, b: 1, a: 0.8509804}
-    - _WaterDepthColor: {r: 0, g: 0.5968418, b: 1, a: 1}
+    - _WaterDepthColor: {r: 0, g: 0.5960784, b: 1, a: 1}
   m_BuildTextureStacks: []
