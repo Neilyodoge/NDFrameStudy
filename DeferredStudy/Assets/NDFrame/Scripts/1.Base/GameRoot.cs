@@ -7,6 +7,12 @@ using UnityEngine;
 /// </summary>
 public class GameRoot : SingletonMono<GameRoot>
 {
+    /// <summary>
+    /// 框架设置
+    /// </summary>
+    [SerializeField]
+    private GameSetting gameSetting;
+    public GameSetting GameSetting { get { return gameSetting; } }  // 为了让上面的gameSetting 只读
     protected override void Awake()
     {
         if (Instance != null)   // 先判断单例是否存在

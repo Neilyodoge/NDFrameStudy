@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 2913517840013778939}
   - component: {fileID: 1800901818}
   - component: {fileID: 9056714860144124509}
+  - component: {fileID: 2402198679786614878}
   m_Layer: 0
   m_Name: GameRoot
   m_TagString: Untagged
@@ -78,6 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1bdfbcac43d074abb31f510545177b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameSetting: {fileID: 11400000, guid: 46e040c94f552f843979fb9267dd1405, type: 2}
 --- !u!114 &1800901818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,4 +105,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62dfbb95d30e1d48a0042372eaa9139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cube: {fileID: 5565096628300152437, guid: fe10229691b3d014c978be49b98b3d68, type: 3}
+--- !u!114 &2402198679786614878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226733334600107576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b2786592e604554b9ac974b49a28f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configSetting: {fileID: 11400000, guid: 8de50df3a8c837b49aeec76e26a2faac, type: 2}
