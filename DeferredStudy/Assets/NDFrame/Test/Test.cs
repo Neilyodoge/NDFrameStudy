@@ -5,11 +5,9 @@ using System;
 
 public class Test : MonoBehaviour
 {
-    
     void Start()
     {
-        DemoConfig config = ConfigManager.Instance.GetConfig<DemoConfig>("武器", 1);
-        Debug.Log(config.Name);
+        ResManager.Instance.Load<CubeController>("Cube");
     }
 
     private void Update()
