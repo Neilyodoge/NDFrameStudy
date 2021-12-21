@@ -5,11 +5,7 @@ Shader "Neilyodog/Water"
     // 1.透明度控制并不是很理想
     // 2.泡沫和深度没分开
     // cube反射暂时没网上叠
-    // fresnel 特性没写
-
     // 深度的时候多少会有一丢丢误差
-
-    // receive 得写GUI
     Properties
     {
        
@@ -180,7 +176,6 @@ Shader "Neilyodog/Water"
                 float3 bumpWS2 = DecodeNormalWS(TW, normalTex2);
                 bumpWS = (bumpWS + bumpWS2) / 2;      // 混合不同方向的法线
                 
-                
             // water depth
                 float2 ScreenUV = i.PositionHCS.xy / _ScreenParams.xy ;
                 half depthTex = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, ScreenUV).r;
@@ -197,15 +192,14 @@ Shader "Neilyodog/Water"
                 half depthDistortionTex = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, opaqueUV).r;
                 half depthDistortionScene = LinearEyeDepth(depthDistortionTex, _ZBufferParams);
                 half depthDistortionWater = depthDistortionScene + i.PositionVS.z;  // 以上三行是为了剔除水面上方扭曲用的
-            // 扭曲这里边缘有点问题
                 half depthMask = 1-step(depthDistortionWater,0.1);
                 if (depthDistortionWater < 0.01)
                 {
                     opaqueUV = ScreenUV;
-                    //depthDistortionWater = half4(lerp(depthDistortionWater.xxx,depthWater,depthMask),1);;  // 为了后面让深度部分也扭曲
+                    depthDistortionWater = depthWater;  // 为了后面让深度部分也扭曲
                 }
                 half4 camColorTex = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, opaqueUV);
-
+                
             // 焦散
                 half4 depthVS = 1; // 观察空间下深度坐标点
                 depthVS.xy = i.PositionVS.xy * depthDistortionScene / - i.PositionVS.z; // 用 depthDistortionScene 来让焦散扭曲
@@ -218,7 +212,7 @@ Shader "Neilyodog/Water"
                 + (depthWS.xz * _CausticTex_ST.xy + _CausticTex_ST.zw) + (depthWS.y * _CausticFacade);
                 half4 causticTex2 = SAMPLE_TEXTURE2D(_CausticTex, sampler_CausticTex, causticUV2.yx);
                 half4 finalCaustic = min(causticTex, causticTex2); //causticTex * causticTex2;
-                // return causticTex;
+                finalCaustic.rgb = finalCaustic.rgb * saturate(1 - pow(depthWater, _CausticScale)) * _CausticIntensity;
 
             // highLight
                 float2 distortionUV2 = float2(frac(_DistortionSpeed.z * _Time.y), frac(_DistortionSpeed.w * _Time.y))
@@ -231,9 +225,7 @@ Shader "Neilyodog/Water"
                 float3 shadowDistortion = i.PositionWS;
                 shadowDistortion.xz = shadowDistortion.xz + _DistortionIntensity * distortionTex;
                 float4 shadowCoord = TransformWorldToShadowCoord(shadowDistortion);         // shadow采样uv
-                
                 Light light = GetMainLight(shadowCoord);  // 加入阴影范围
-                // return half4(light.shadowAttenuation.xxx,1);
                 half3 N = normalize(bumpWS);    //waterNormal;// normalize(i.NormalWS);
                 half3 L = light.direction;
                 half3 V = normalize(_WorldSpaceCameraPos.xyz - i.PositionWS);
@@ -244,7 +236,7 @@ Shader "Neilyodog/Water"
             // Refection
                 float3 refectionUV = reflect(N, -V);
                 half4 refectionTex = SAMPLE_TEXTURECUBE(_RefectionTex, sampler_RefectionTex, refectionUV);
-                ///////// 改写ref怎么叠加了
+                ///////// ref叠加没写呢
                 
             // foam
                 float2 foamUV = float2(frac(_FoamSpeed.x * _Time.y), frac(_FoamSpeed.x * _Time.y)) + (i.PositionWS.xz * _FoamTex_ST.xy + _FoamTex_ST.zw);
@@ -254,17 +246,18 @@ Shader "Neilyodog/Water"
             // fresnel
                 half NoV = saturate(dot(N,V));
                 half3 fresnelTint = (1-NoV) * _fresnelScale * _fresnelColor.rgb;
-                // return 1-NoV;
 
             // color blend
                 // depthWater 扭曲
-                half4 Tint = lerp(_WaterDepthColor, _WaterColor, saturate(depthDistortionWater));                     // 深水区浅水区颜色区分
+                camColorTex = lerp(finalCaustic,camColorTex,depthMask);                                             // 尝试去掉扭曲产生的边缘噪声
+                half4 Tint = lerp(_WaterDepthColor, _WaterColor, saturate(depthDistortionWater));                     // 深水区浅水区颜色区分,这里不限制的话return会有问题
                 Tint = lerp(camColorTex, Tint, _WaterAlpha);                                                          // 叠加扭曲
                 Tint.rgb = lerp( Tint.rgb,_WaterDepthWSColor.rgb, saturate(depthDistortionWater 
-                            + _DepthForCol) * _WaterDepthWSColor.a * depthMask);                                      // 根据深度给染色不同效果
+                            + _DepthForCol) * _WaterDepthWSColor.a);                                                  // 根据深度给染色不同效果
+                            // return depthDistortionWater;
                 Tint.rgb = lerp(Tint.rgb, _FoamTint.rgb, (1 - foam) * _FoamTint.a);                                   // 叠加Foam,a控制强度
                 Tint += lerp(specular * _ShadowColor.a, specular, light.shadowAttenuation);                           // 加入高光部分,根据阴影的a来判断是否剔除掉高光部分
-                Tint.rgb += finalCaustic.rgb * saturate(1 - pow(depthWater, _CausticScale)) * _CausticIntensity;      // 加入焦散
+                Tint.rgb += finalCaustic.rgb;                                                                         // 加入焦散
                 Tint.rgb = lerp(_ShadowColor.rgb * Tint.rgb, Tint.rgb, saturate(light.shadowAttenuation));            // 叠加接受阴影
                 Tint.rgb += lerp(0,fresnelTint,_fresnelColor.a);                                                      // 叠加菲尼尔
                 Tint.rgb = MixFog(Tint.rgb, i.fogCoord);                                                              // 混合Fog
