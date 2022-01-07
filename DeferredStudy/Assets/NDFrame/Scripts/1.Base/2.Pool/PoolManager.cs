@@ -84,6 +84,26 @@ public class PoolManager : ManagerBase<PoolManager>
         // 前半句是有没有 GameObjectPoolData 也就是子集 ；  后半句是里面有没有数据
         return gameObjectPoolDic.ContainsKey(name) && gameObjectPoolDic[name].poolQueue.Count > 0;
     }
+
+    /// <summary>
+    /// 检查缓存，如果成功，则加载游戏物体;不成功返回null
+    /// </summary>
+    /// <returns></returns>
+    public GameObject CheckCacheAndLoadGameObject(string path, Transform parent)
+    {
+        // 通过路径获取最终预制体的名称 "UI/LoginWindow"
+        string[] pathSplit = path.Split('/');
+        string prefabName = pathSplit[pathSplit.Length - 1];
+        // 对象池有数据
+        if (gameObjectPoolDic.ContainsKey(prefabName) && gameObjectPoolDic[prefabName].poolQueue.Count > 0) // 判断字典是不是包含这个name,然后是有没有数据
+        {
+            return gameObjectPoolDic[prefabName].GetObj(parent);
+        }
+        else
+        {
+            return null;
+        }
+    }
     #endregion
     #region 普通对象相关操作
     // 获取普通对象

@@ -5,6 +5,10 @@ using UnityEngine;
 public class CubeController : MonoBehaviour
 {
     // Start is called before the first frame update
+    private void Awake()
+    {
+        Debug.Log("CubeController");
+    }
     void Start()
     {
         
