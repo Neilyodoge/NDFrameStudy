@@ -11,9 +11,7 @@ public class ResManager : ManagerBase<ResManager>
     public override void Init()
     {
         base.Init();
-        // TODO: 替换成真实的配置
-        wantCacheDic = new Dictionary<Type, bool>();
-        wantCacheDic.Add(typeof(CubeController),true);
+        wantCacheDic = GameRoot.Instance.GameSetting.cacheDic;  // 直接管GameRoot要就行了
     }
     /// <summary>
     /// 加载unity资源 如AudionClip Sprite。这种的特点就是不需要实例化

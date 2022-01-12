@@ -26,10 +26,37 @@ public static class NDExtension
         return type.GetCustomAttribute<T>();
     }
 
-  //使用的时候
+    //使用的时候
     // 特性名字 变量名字 = this.GetAttribute<特性名字>(typeof(想从哪个对象身上获取));
     // TestAttribute test = this.GetAttribute<TestAttribute>(typeof(GameObject));
     // 然后可以 if (变量名字.特性名字)
     #endregion
 
+    #region 资源管理
+    /// <summary>
+    /// GameObject放入对象池
+    /// </summary>
+    /// <param name="go"></param>
+    public static void NDGameObjectPushPool(this GameObject go)
+    { 
+        PoolManager.Instance.PushGameObject(go);
+    }
+    /// <summary>
+    /// GameObject放入对象池
+    /// </summary>
+    /// <param name="go"></param>
+    public static void NDGameObjectPushPool(this Component com)
+    {
+        NDGameObjectPushPool(com.gameObject);
+    }
+
+    /// <summary>
+    /// 普通类放进池子
+    /// </summary>
+    /// <param name="obj"></param>
+    public static void NDObjectPushPool(this object obj)
+    {
+        PoolManager.Instance.PushObject(obj);
+    }
+    #endregion
 }

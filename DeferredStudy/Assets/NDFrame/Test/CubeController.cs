@@ -2,13 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Pool]
 public class CubeController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private void Awake()
-    {
-        Debug.Log("CubeController");
-    }
+
     void Start()
     {
         
