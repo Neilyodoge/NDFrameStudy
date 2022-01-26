@@ -48,6 +48,10 @@ public static class NDExtension
                 }
             }
         }
+        else
+        {
+            return false;
+        }
         return true;
     }
     #endregion

@@ -45,7 +45,6 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
     /// 某个事件中的一个时间的数据包装类,一次事件
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Pool]
     private class NDEvenetListenerEventInfo<T>
     {
         // T : 事件本身的参数 （PointerEventData，Collision）
@@ -56,6 +55,12 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
         {
             this.action = action;
             this.args = args;
+        }
+        public void Destory()
+        {
+            this.action = null;
+            this.args = null;
+            this.NDObjectPushPool();
         }
         public void TriggerEvent(T eventData)
         {
@@ -69,7 +74,6 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
     /// 一类事件的数据类型包装 ： 包含多个 NDEvenetListenerEventInfo
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Pool]
     private class NDEvenetListenerEventInfos<T> : INDEvenetListenerEventInfos
     {
         // 所有的事件
@@ -79,7 +83,7 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
         /// </summary>
         public void AddListener(Action<T, object[]> action, params object[] args)
         {
-            NDEvenetListenerEventInfo<T> info = ResManager.Instance.Load<NDEvenetListenerEventInfo<T>>();
+            NDEvenetListenerEventInfo<T> info = PoolManager.Instance.GetObject<NDEvenetListenerEventInfo<T>>();
             info.Init(action, args);
             eventList.Add(info);
         }
@@ -100,7 +104,7 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
                         if (args.ArrayEquals(eventList[i].args))
                         {
                             // 移除
-                            eventList[i].action.NDObjectPushPool();
+                            eventList[i].Destory();
                             eventList.RemoveAt(i);
                             return;
                         }
@@ -108,7 +112,7 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
                     else
                     {
                         // 移除-移除全部action
-                        eventList[i].action.NDObjectPushPool();
+                        eventList[i].Destory();
                         eventList.RemoveAt(i);
                         return;
                     }
@@ -122,9 +126,10 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
         {
             for (int i = 0; i < eventList.Count; i++)
             {
-                eventList[i].NDObjectPushPool();
+                eventList[i].Destory();
             }
             eventList.Clear();
+            this.NDObjectPushPool();
         }
         public void TriggerEvent(T eventData)
         {
@@ -151,7 +156,7 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
         else // 字典中没有类型要去添加
         {
             // 因为要从对象池拿，所以用Instance
-            NDEvenetListenerEventInfos<T> infos = ResManager.Instance.Load<NDEvenetListenerEventInfos<T>>();
+            NDEvenetListenerEventInfos<T> infos = PoolManager.Instance.GetObject<NDEvenetListenerEventInfos<T>>();
             infos.AddListener(action, args);
             eventInfoDic.Add(eventType, infos);
         }
@@ -176,6 +181,7 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
         if (eventInfoDic.ContainsKey(eventType))
         {
             eventInfoDic[eventType].RemoveAll();
+            eventInfoDic.Remove(eventType);
         }
     }
     /// <summary>
@@ -188,6 +194,7 @@ public class NDEventListener : MonoBehaviour, IMouseEvent
             infos.RemoveAll();  // 用了上面的接口
         }
         eventInfoDic.Clear();
+
     }
     #endregion
 
