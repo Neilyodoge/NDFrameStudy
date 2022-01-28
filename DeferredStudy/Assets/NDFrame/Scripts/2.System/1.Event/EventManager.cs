@@ -89,7 +89,8 @@ public static class EventManager
         {
             (eventInfoDic[eventName] as EventInfo).action += action;
         }
-        else //  没有需要新增到字典并添加对应的Action
+        //  没有需要新增到字典并添加对应的Action
+        else
         {
             EventInfo eventInfo = PoolManager.Instance.GetObject<EventInfo>();
             eventInfo.Init(action);
