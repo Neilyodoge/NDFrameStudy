@@ -2,29 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPoolData : MonoBehaviour
+/// <summary>
+/// 普通类 对象 对象池数据
+/// </summary>
+public class ObjectPoolData
 {
-    public Queue<object> poolQueue = new Queue<object>();     // 对象容器
-
-    public ObjectPoolData(object obj)   // 构造函数
+    public ObjectPoolData(object obj)
     {
         PushObj(obj);
     }
-
+    // 对象容器
+    public Queue<object> poolQueue = new Queue<object>();
     /// <summary>
     /// 将对象放进对象池
     /// </summary>
-    /// <param name="obj"></param>
     public void PushObj(object obj)
     {
-        poolQueue.Enqueue(obj);         // 添加队列
+        poolQueue.Enqueue(obj);
     }
+
     /// <summary>
     /// 从对象池中获取对象
     /// </summary>
     /// <returns></returns>
     public object GetObj()
     {
-        return poolQueue.Dequeue();     // 移除队列
+        return poolQueue.Dequeue();
     }
 }

@@ -15,7 +15,7 @@ public class PoolManager : ManagerBase<PoolManager>
     /// <summary>
     /// 普通类 对象容器
     /// </summary>
-    public Dictionary<string, ObjectPoolData> ObjectPoolDic = new Dictionary<string, ObjectPoolData>();
+    public Dictionary<string, ObjectPoolData> objectPoolDic = new Dictionary<string, ObjectPoolData>();
     public override void Init()
     {
         base.Init();
@@ -113,7 +113,7 @@ public class PoolManager : ManagerBase<PoolManager>
         if (CheckObjectCache<T>())
         {
             string name = typeof(T).FullName;
-            obj = (T)ObjectPoolDic[name].GetObj();
+            obj = (T)objectPoolDic[name].GetObj();
             return obj;
         }
         else
@@ -126,13 +126,13 @@ public class PoolManager : ManagerBase<PoolManager>
     {
         string name = obj.GetType().FullName;
         // 现在有没有这一层
-        if (ObjectPoolDic.ContainsKey(name))
+        if (objectPoolDic.ContainsKey(name))
         {
-            ObjectPoolDic[name].PushObj(obj);
+            objectPoolDic[name].PushObj(obj);
         }
         else
         {
-            ObjectPoolDic.Add(name, new ObjectPoolData(obj));   // 首次放入对象池时候，使用构造函数
+            objectPoolDic.Add(name, new ObjectPoolData(obj));   // 首次放入对象池时候，使用构造函数
         }
     }
 
@@ -141,7 +141,8 @@ public class PoolManager : ManagerBase<PoolManager>
     {
         string name = typeof(T).FullName;       // FullName 会带命名空间
         // 前半句是有没有 GameObjectPoolData 也就是子集 ；  后半句是里面有没有数据
-        return ObjectPoolDic.ContainsKey(name) && gameObjectPoolDic[name].poolQueue.Count > 0;
+        //return ObjectPoolDic.ContainsKey(name) && gameObjectPoolDic[name].poolQueue.Count > 0;
+        return objectPoolDic.ContainsKey(name) && objectPoolDic[name].poolQueue.Count > 0;
     }
     #endregion
 
@@ -165,7 +166,7 @@ public class PoolManager : ManagerBase<PoolManager>
         // 清理字典物体
         if (ClearCObject)         // 判断C#数据要不要清理
         {
-            ObjectPoolDic.Clear();
+            objectPoolDic.Clear();
         }
     }
 
@@ -193,11 +194,11 @@ public class PoolManager : ManagerBase<PoolManager>
     }
     public void ClearObject<T>()
     {
-        ObjectPoolDic.Remove(typeof(T).FullName);
+        objectPoolDic.Remove(typeof(T).FullName);
     }
     public void ClearObject(Type type)
     {
-        ObjectPoolDic.Remove(type.FullName);
+        objectPoolDic.Remove(type.FullName);
     }
     #endregion
 
