@@ -9,7 +9,7 @@ public class AudioManager : ManagerBase<AudioManager>
     private AudioSource BGAudioSource;
 
     #region 音量、播放控制
-    [SerializeField][Range(0, 1)][OnValueChanged("UpdateAllAudiPlay")]
+    [SerializeField][Range(0, 1)][OnValueChanged("UpdateAllAudioPlay")]
     private float globalVolume;
     public float GlobalVolume 
     { 
@@ -18,11 +18,11 @@ public class AudioManager : ManagerBase<AudioManager>
         {
             if (globalVolume == value) return;  // 先判断发生变化再修改
             globalVolume = value; 
-            UpdateAllAudiPlay(); 
+            UpdateAllAudioPlay(); 
         } 
     } // 封装字段并显示属性
 
-    [SerializeField][Range(0, 1)][OnValueChanged("UpdateBGAudiPlay")]
+    [SerializeField][Range(0, 1)][OnValueChanged("UpdateBGAudioPlay")]
     private float bgVolume;
     public float BGVolume 
     { 
@@ -31,11 +31,11 @@ public class AudioManager : ManagerBase<AudioManager>
         {
             if (bgVolume == value) return;  // 先判断发生变化再修改
             bgVolume = value; 
-            UpdateBGAudiPlay(); 
+            UpdateBGAudioPlay(); 
         } 
     }
 
-    [SerializeField][Range(0, 1)][OnValueChanged("UpdateEffectAudiPlay")]
+    [SerializeField][Range(0, 1)][OnValueChanged("UpdateEffectAudioPlay")]
     private float effectVolume;
     public float EffectVolume 
     { 
@@ -44,7 +44,7 @@ public class AudioManager : ManagerBase<AudioManager>
         {
             if (effectVolume == value) return;
             effectVolume = value; 
-            UpdateEffectAudiPlay(); 
+            UpdateEffectAudioPlay(); 
         } 
     }
 
@@ -95,29 +95,29 @@ public class AudioManager : ManagerBase<AudioManager>
             {
                 BGAudioSource.UnPause();
             }
-            UpdateEffectAudiPlay();
+            UpdateEffectAudioPlay();
         }
     }
 
     /// <summary>
     /// 更新全部播放器类型
     /// </summary>
-    private void UpdateAllAudiPlay()
+    private void UpdateAllAudioPlay()
     {
-        UpdateBGAudiPlay();
-        UpdateEffectAudiPlay();
+        UpdateBGAudioPlay();
+        UpdateEffectAudioPlay();
     }
     /// <summary>
     /// 更新背景音乐
     /// </summary>
-    private void UpdateBGAudiPlay()
+    private void UpdateBGAudioPlay()
     {
         BGAudioSource.volume = bgVolume * globalVolume;
     }
     /// <summary>
     /// 更新特效音乐
     /// </summary>
-    private void UpdateEffectAudiPlay()
+    private void UpdateEffectAudioPlay()
     {
         Debug.Log("更新特效音乐");
     }
@@ -127,7 +127,7 @@ public class AudioManager : ManagerBase<AudioManager>
     private void UpdateMute()
     {
         BGAudioSource.mute = isMute;
-        UpdateEffectAudiPlay();
+        UpdateEffectAudioPlay();
     }
     /// <summary>
     /// 更新背景音乐循环
@@ -137,5 +137,28 @@ public class AudioManager : ManagerBase<AudioManager>
         BGAudioSource.loop = isLoop;
     }
 
+    #endregion
+    public override void Init()
+    {
+        base.Init();
+        UpdateAllAudioPlay();
+    }
+    #region 背景音乐
+    public void PlayBGAudio(AudioClip clip, bool loop = true, float volume = -1)
+    {
+        BGAudioSource.clip = clip;
+        IsLoop = loop;
+        if (volume!=-1)
+        {
+            BGVolume = volume;
+        }
+        BGAudioSource.Play();
+    }
+
+    public void PlayBGAudio(string clipPath, bool loop = true, float volume = -1)
+    {
+        AudioClip clip = ResManager.Instance.LoadAsset<AudioClip>(clipPath);
+        PlayBGAudio(clip, loop, volume);
+    }
     #endregion
 }
