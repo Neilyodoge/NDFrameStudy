@@ -12,51 +12,56 @@ public class AudioManager : ManagerBase<AudioManager>
     private GameObject prefab_AudioPlay;
 
     // 场景中生效的所有特效音乐播放器
-    private List<AudioSource> audioPlayList; // 游戏中所有播放器
+    private List<AudioSource> audioPlayList = new List<AudioSource>();
+
     #region 音量、播放控制
-    [SerializeField][Range(0, 1)][OnValueChanged("UpdateAllAudioPlay")]
+    [SerializeField]
+    [Range(0, 1)]
+    [OnValueChanged("UpdateAllAudioPlay")]
     private float globalVolume;
     public float GlobalVolume 
-    { 
+    {
         get => globalVolume; 
         set 
         {
-            if (globalVolume == value) return;  // 先判断发生变化再修改
-            globalVolume = value; 
+            if (globalVolume == value) return; // 先判断发生变化再修改
+            globalVolume = value;
             UpdateAllAudioPlay(); 
-        } 
-    } // 封装字段并显示属性
+        }
+    }  // 封装字段并显示属性
 
-    [SerializeField][Range(0, 1)][OnValueChanged("UpdateBGAudioPlay")]
+    [SerializeField]
+    [Range(0, 1)]
+    [OnValueChanged("UpdateBGAudioPlay")]
     private float bgVolume;
-    public float BGVolume 
+    public float BGVolume
     { 
         get => bgVolume; 
         set 
         {
-            if (bgVolume == value) return;  // 先判断发生变化再修改
+            if (bgVolume == value) return;
             bgVolume = value; 
-            UpdateBGAudioPlay(); 
-        } 
+            UpdateBGAudioPlay();
+        }
     }
 
-    [SerializeField][Range(0, 1)][OnValueChanged("UpdateEffectAudioPlay")]
+    [SerializeField]
+    [Range(0, 1)]
+    [OnValueChanged("UpdateEffectAudioPlay")]
     private float effectVolume;
-    public float EffectVolume 
-    { 
-        get => effectVolume; 
+    public float EffectVolume
+    {
+        get => effectVolume;
         set 
         {
             if (effectVolume == value) return;
-            effectVolume = value; 
-            UpdateEffectAudioPlay(); 
-        } 
+            effectVolume = value;
+            UpdateEffectAudioPlay();
+        }
     }
 
-    /// <summary>
-    /// 静音部分逻辑
-    /// </summary>
-    [SerializeField][OnValueChanged("UpdateMute")]
+    [SerializeField]
+    [OnValueChanged("UpdateMute")]
     private bool isMute = false;
     public bool IsMute
     {
@@ -68,10 +73,9 @@ public class AudioManager : ManagerBase<AudioManager>
             UpdateMute();
         }
     }
-    /// <summary>
-    /// 循环部分逻辑
-    /// </summary>
-    [SerializeField][OnValueChanged("UpdateLoop")]
+
+    [SerializeField]
+    [OnValueChanged("UpdateLoop")]
     private bool isLoop = true;
     public bool IsLoop
     {
@@ -92,7 +96,7 @@ public class AudioManager : ManagerBase<AudioManager>
         {
             if (isPause == value) return;
             isPause = value;
-            if (IsPause)
+            if (isPause)
             {
                 BGAudioSource.Pause();
             }
@@ -112,6 +116,7 @@ public class AudioManager : ManagerBase<AudioManager>
         UpdateBGAudioPlay();
         UpdateEffectAudioPlay();
     }
+
     /// <summary>
     /// 更新背景音乐
     /// </summary>
@@ -119,15 +124,16 @@ public class AudioManager : ManagerBase<AudioManager>
     {
         BGAudioSource.volume = bgVolume * globalVolume;
     }
+
     /// <summary>
-    /// 更新特效音乐
+    /// 更新特效音乐播放器
     /// </summary>
     private void UpdateEffectAudioPlay()
     {
-        // 倒序遍历,由于正常for循环查到是空后去掉会改变序号
-        for (int i = audioPlayList.Count - 1; i >= 0; i--)
+        // 倒序遍历，由于正常for循环查到是空后去掉会改变序号
+        for (int i = audioPlayList.Count-1; i >= 0; i--)
         {
-            if (audioPlayList[i] != null)
+            if (audioPlayList[i]!=null)
             {
                 SetEffectAudioPlay(audioPlayList[i]);
             }
@@ -141,7 +147,7 @@ public class AudioManager : ManagerBase<AudioManager>
     /// <summary>
     /// 设置特效音乐播放器
     /// </summary>
-    private void SetEffectAudioPlay(AudioSource audioPlay,float spatial = -1)   // -1 就是不设置
+    private void SetEffectAudioPlay(AudioSource audioPlay,float spatial = -1) // -1 就是不设置
     {
         audioPlay.mute = isMute;
         audioPlay.volume = effectVolume * globalVolume;
@@ -167,22 +173,25 @@ public class AudioManager : ManagerBase<AudioManager>
         BGAudioSource.mute = isMute;
         UpdateEffectAudioPlay();
     }
+
     /// <summary>
     /// 更新背景音乐循环
     /// </summary>
     private void UpdateLoop()
     {
         BGAudioSource.loop = isLoop;
-    }
 
+    }
     #endregion
+
     public override void Init()
     {
         base.Init();
         UpdateAllAudioPlay();
     }
+
     #region 背景音乐
-    public void PlayBGAudio(AudioClip clip, bool loop = true, float volume = -1)    // clip 就是要播放的片段
+    public void PlayBGAudio(AudioClip clip,bool loop = true,float volume = -1) // clip 就是要播放的片段
     {
         BGAudioSource.clip = clip;
         IsLoop = loop;
@@ -192,7 +201,6 @@ public class AudioManager : ManagerBase<AudioManager>
         }
         BGAudioSource.Play();
     }
-
     public void PlayBGAudio(string clipPath, bool loop = true, float volume = -1)
     {
         AudioClip clip = ResManager.Instance.LoadAsset<AudioClip>(clipPath);
@@ -203,12 +211,14 @@ public class AudioManager : ManagerBase<AudioManager>
     #region 特效音乐
 
     private Transform audioPlayRoot = null;
+
     /// <summary>
     /// 获取音乐播放器
     /// </summary>
+    /// <returns></returns>
     private AudioSource GetAudioPlay(bool is3D = true)
     {
-        if (audioPlayRoot == null)
+        if (audioPlayRoot==null)
         {
             audioPlayRoot = new GameObject("AudioPlayRoot").transform;
         }
@@ -222,18 +232,17 @@ public class AudioManager : ManagerBase<AudioManager>
     /// <summary>
     /// 回收播放器
     /// </summary>
-    private void RecycleAudioPlay(AudioSource audioSource, AudioClip clip, UnityAction callBack, float time)
+    private void RecycleAudioPlay(AudioSource audioSource, AudioClip clip, UnityAction callBak, float time)
     {
-        StartCoroutine(DoRecycleAudioPlay(audioSource, clip, callBack, time));
+        StartCoroutine(DoRecycleAudioPlay(audioSource,clip,callBak,time));
     }
 
-    private IEnumerator DoRecycleAudioPlay(AudioSource audioSource, AudioClip clip, UnityAction callBack, float time)   // 携程
+    private IEnumerator DoRecycleAudioPlay(AudioSource audioSource, AudioClip clip, UnityAction callBack, float time)
     {
-        // 延迟 clip的长度(秒) 
+        // 延迟 Clip的长度（秒）
         yield return new WaitForSeconds(clip.length);
-        // 放进池子里
-        if (audioSource != null)
-        {
+        // 放回池子
+        if (audioSource != null) {
             audioSource.NDGameObjectPushPool();
             // 回调 延迟 time（秒）时间
             yield return new WaitForSeconds(time);
@@ -247,10 +256,10 @@ public class AudioManager : ManagerBase<AudioManager>
     /// <param name="clip">音效片段</param>
     /// <param name="component">挂载组件</param>
     /// <param name="volumeScale">音量 0-1</param>
-    /// <param name="is3d">是否3d</param>
+    /// <param name="is3d">是否3D</param>
     /// <param name="callBack">回调函数-在音乐播放完成后执行</param>
-    /// <param name="callBackTime">回调延迟时间</param>
-    public void PlayOnShot(AudioClip clip,Component component,float volumeScale = 1,bool is3d = true, UnityAction callBack = null,float callBackTime = 0)
+    /// <param name="callBacKTime">回调函数在音乐播放完成后执行的延迟时间</param>
+    public void PlayOnShot(AudioClip clip,Component component,float volumeScale=1,bool is3d = true,UnityAction callBack = null,float callBacKTime = 0)
     {
         // 初始化音乐播放器
         AudioSource audioSource = GetAudioPlay(is3d);
@@ -261,19 +270,19 @@ public class AudioManager : ManagerBase<AudioManager>
         audioSource.PlayOneShot(clip, volumeScale);
 
         // 播放器回收以及回调函数
-        RecycleAudioPlay(audioSource, clip, callBack, callBackTime);
+        RecycleAudioPlay(audioSource, clip, callBack, callBacKTime);
     }
 
     /// <summary>
-    /// 播放一次特效音乐 3D
+    /// 播放一次特效音乐
     /// </summary>
     /// <param name="clip">音效片段</param>
-    /// <param name="position">播放位置</param>
+    /// <param name="position">播放的位置</param>
     /// <param name="volumeScale">音量 0-1</param>
-    /// <param name="is3d">是否3d</param>
+    /// <param name="is3d">是否3D</param>
     /// <param name="callBack">回调函数-在音乐播放完成后执行</param>
-    /// <param name="callBackTime">回调延迟时间</param>
-    public void PlayOnShot(AudioClip clip, Vector3 position, float volumeScale = 1, bool is3d = true, UnityAction callBack = null, float callBackTime = 0)
+    /// <param name="callBacKTime">回调函数在音乐播放完成后执行的延迟时间</param>
+    public void PlayOnShot(AudioClip clip, Vector3 position, float volumeScale = 1, bool is3d = true, UnityAction callBack = null, float callBacKTime = 0)
     {
         // 初始化音乐播放器
         AudioSource audioSource = GetAudioPlay(is3d);
@@ -281,9 +290,8 @@ public class AudioManager : ManagerBase<AudioManager>
 
         // 播放一次音效
         audioSource.PlayOneShot(clip, volumeScale);
-
         // 播放器回收以及回调函数
-        RecycleAudioPlay(audioSource, clip, callBack, callBackTime);
+        RecycleAudioPlay(audioSource, clip, callBack, callBacKTime);
     }
 
     /// <summary>
@@ -292,13 +300,13 @@ public class AudioManager : ManagerBase<AudioManager>
     /// <param name="clipPath">音效路径</param>
     /// <param name="component">挂载组件</param>
     /// <param name="volumeScale">音量 0-1</param>
-    /// <param name="is3d">是否3d</param>
+    /// <param name="is3d">是否3D</param>
     /// <param name="callBack">回调函数-在音乐播放完成后执行</param>
-    /// <param name="callBackTime">回调延迟时间</param>
-    public void PlayOnShot(string clipPath, Component component, float volumeScale = 1, bool is3d = true, UnityAction callBack = null, float callBackTime = 0)
+    /// <param name="callBacKTime">回调函数在音乐播放完成后执行的延迟时间</param>
+    public void PlayOnShot(string clipPath, Component component, float volumeScale = 1, bool is3d = true, UnityAction callBack = null, float callBacKTime = 0)
     {
         AudioClip audioClip = ResManager.Instance.LoadAsset<AudioClip>(clipPath);
-        if (audioClip != null) PlayOnShot(audioClip, component, volumeScale, is3d, callBack, callBackTime);
+        if (audioClip != null) PlayOnShot(audioClip, component, volumeScale, is3d, callBack, callBacKTime);
     }
 
     /// <summary>
@@ -307,14 +315,13 @@ public class AudioManager : ManagerBase<AudioManager>
     /// <param name="clipPath">音效路径</param>
     /// <param name="position">播放的位置</param>
     /// <param name="volumeScale">音量 0-1</param>
-    /// <param name="is3d">是否3d</param>
+    /// <param name="is3d">是否3D</param>
     /// <param name="callBack">回调函数-在音乐播放完成后执行</param>
-    /// <param name="callBackTime">回调延迟时间</param>
-    public void PlayOnShot(string clipPath, Vector3 position, float volumeScale = 1, bool is3d = true, UnityAction callBack = null, float callBackTime = 0)
+    /// <param name="callBacKTime">回调函数在音乐播放完成后执行的延迟时间</param>
+    public void PlayOnShot(string clipPath, Vector3 position, float volumeScale = 1, bool is3d = true, UnityAction callBack = null, float callBacKTime = 0)
     {
         AudioClip audioClip = ResManager.Instance.LoadAsset<AudioClip>(clipPath);
-        if (audioClip != null) PlayOnShot(audioClip, position, volumeScale, is3d, callBack, callBackTime);
+        if (audioClip != null) PlayOnShot(audioClip, position, volumeScale, is3d, callBack, callBacKTime);
     }
     #endregion
 }
-
