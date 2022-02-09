@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters.Binary;   // 好像是二进制文件引入
 
 /// <summary>
 /// 存档管理器
@@ -19,7 +19,7 @@ public static class SaveManager
     /// </summary>
     /// <param name="saveObject">保存的对象</param>
     /// <param name="path">保存的路径</param>
-    public static void SaveFile(object saveObject, string path)
+    private static void SaveFile(object saveObject, string path)
     {
         FileStream f = new FileStream(path, FileMode.OpenOrCreate);
         // 二进制的方式把对象写进文件
@@ -32,7 +32,7 @@ public static class SaveManager
     /// </summary>
     /// <typeparam name="T">加载后要转为的类型</typeparam>
     /// <param name="path">加载路径</param>
-    public static T LoadFile<T>(string path) where T : class
+    private static T LoadFile<T>(string path) where T : class
     {
         if (!File.Exists(path))
         {
