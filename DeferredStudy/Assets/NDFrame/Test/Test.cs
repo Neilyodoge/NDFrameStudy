@@ -15,16 +15,12 @@ public class Test : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            AudioManager.Instance.PlayBGAudio("Menu");
+            AudioManager.Instance.PlayOnShot("cannon_01",Camera.main,1,true, CallBack, 2);
         }
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            AudioManager.Instance.IsPause = true;
-        }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            AudioManager.Instance.IsPause = false;
-        }
+    }
+    void CallBack()
+    {
+        Debug.Log("callback");
     }
 
 
