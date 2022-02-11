@@ -9,7 +9,39 @@ using System.Runtime.Serialization.Formatters.Binary;   // 好像是二进制文
 /// </summary>
 public static class SaveManager
 {
+    private const string saveDirName = "saveData";      // 存档的保存
+    private const string settingDirName = "setting";    // 设置的保存 ： 1.全局数据的保存(分辨率、按键) 2.存档的设置保存。这个是不受玩家影响的
+    private static readonly string saveDirPath;         // 存档文件夹路径
+    private static readonly string settingDirPath;      // 设置文件夹路径
+    static SaveManager()
+    {
+        // 初始化路径
+        saveDirPath = Application.persistentDataPath + "/" + saveDirName;
+        settingDirPath = Application.persistentDataPath + "/" + settingDirName;
+        // 确保路径的存在
+        if (Directory.Exists(saveDirPath) == false)
+        {
+            Directory.CreateDirectory(saveDirPath);
+        }
+        if (Directory.Exists(settingDirPath) == false)
+        {
+            Directory.CreateDirectory(settingDirPath);
+        }
+    }
 
+    #region 关于对象
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="saveObject">要保存的对象</param>
+    /// <param name="saveFileName">保存的文件名称</param>
+    /// <param name="saveID">存档的ID</param>
+    public static void SaveObject(object saveObject, string saveFileName, int saveID = 0)
+    { 
+        // 存档所在的文件夹路径
+        // 具体的对象要保存的路径
+    }
+    #endregion
 
     #region 工具函数
 

@@ -15,10 +15,7 @@ public class Test : MonoBehaviour
 {
     void Start()
     {
-        TestSave testSave = new TestSave { Name = "张三" };
-        SaveManager.SaveFile(testSave, Application.persistentDataPath + "/张三");
-        TestSave testSave1 = SaveManager.LoadFile<TestSave>(Application.persistentDataPath + "/张三");
-        Debug.Log(testSave1.Name);
+       // SaveManager.SaveFile(new TestSave() { Name = "123" }, Application.persistentDataPath + "/" + 1);
     }
     private void Update()
     {
