@@ -13,6 +13,11 @@ public static class SaveManager
     private const string settingDirName = "setting";    // 设置的保存 ： 1.全局数据的保存(分辨率、按键) 2.存档的设置保存。这个是不受玩家影响的
     private static readonly string saveDirPath;         // 存档文件夹路径
     private static readonly string settingDirPath;      // 设置文件夹路径
+
+    // 存档中对象的缓存字典
+    //                          <存档ID，<文件名称，实际的对象>>
+    private static Dictionary<int, Dictionary<string, object>> cacheDic = new Dictionary<int, Dictionary<string, object>>(); 
+
     static SaveManager()
     {
         // 初始化路径
@@ -29,6 +34,62 @@ public static class SaveManager
         }
     }
 
+    #region 关于缓存
+    /// <summary>
+    /// 设置缓存
+    /// </summary>
+    /// <param name="saveID">存档ID</param>
+    /// <param name="fileName">文件名称</param>
+    /// <param name="saveObject">要缓存的对象</param>
+    private static void SetCache(int saveID, string fileName, object saveObject)
+    {
+        // 缓存字典中是否有这个saveID
+        if (cacheDic.ContainsKey(saveID))
+        {
+            // 这个存档中有没有这个文件
+            if (cacheDic[saveID].ContainsKey(fileName))
+            {
+                cacheDic[saveID][fileName] = saveObject;
+            }
+            else
+            {
+                cacheDic[saveID].Add(fileName, saveObject);
+            }
+        }
+        else
+        {
+            cacheDic.Add(saveID, new Dictionary<string, object>() { { fileName, saveObject } });
+        }
+    }
+
+    /// <summary>
+    /// 获取缓存
+    /// </summary>
+    /// <param name="saveID">存档ID</param>
+    /// <param name="fileName">要获取的对象</param>
+    /// <returns></returns>
+    private static T GetCache<T>(int saveID, string fileName) where T : class
+    {
+        // 缓存字典中是否有这个saveID
+        if (cacheDic.ContainsKey(saveID))
+        {
+            // 这个存档中有没有这个文件
+            if (cacheDic[saveID].ContainsKey(fileName))
+            {
+                return cacheDic[saveID][fileName] as T;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
+        }
+    }
+    #endregion
+
     #region 关于对象
     /// <summary>
     /// 保存对象至某个存档中
@@ -44,7 +105,20 @@ public static class SaveManager
         string savePath = dirPath + "/" + saveFileName;
         // 具体的保存
         SaveFile(saveObject, savePath);
+
+        // 更新缓存
+        SetCache(saveID, saveFileName, saveObject);
         // TODO: 更新存档时间
+    }
+
+    /// <summary>
+    /// 保存对象至某个存档中
+    /// </summary>
+    /// <param name="saveObject">要保存的对象</param>
+    /// <param name="saveID">存档的ID</param>
+    public static void SaveObject(object saveObject, int saveID = 0)
+    {
+        SaveObject(saveObject,saveObject.GetType().Name, saveID);
     }
 
     /// <summary>
@@ -56,12 +130,29 @@ public static class SaveManager
     /// <returns></returns>
     public static T LoadObject<T>(string saveFileName, int saveID = 0) where T : class
     {
-        // 存档所在的文件夹路径
-        string dirPath = GetSavePath(saveID);
-        if (dirPath == null) return null;
-        // 具体的对象要保存的路径
-        string savePath = dirPath + "/" + saveFileName;
-        return LoadFile<T>(savePath);
+        T obj = GetCache<T>(saveID, saveFileName);
+        if (obj == null)
+        {
+            // 存档所在的文件夹路径
+            string dirPath = GetSavePath(saveID);
+            if (dirPath == null) return null;
+            // 具体的对象要保存的路径
+            string savePath = dirPath + "/" + saveFileName;
+            obj = LoadFile<T>(savePath);
+            SetCache(saveID, saveFileName, obj);
+        }
+        return obj;
+    }
+
+    /// <summary>
+    /// 从某个具体的存档中加载某个对象
+    /// </summary>
+    /// <typeparam name="T">要返回的实际类型</typeparam>
+    /// <param name="id">存档ID</param>
+    /// <returns></returns>
+    public static T LoadObject<T>(int saveID = 0) where T : class
+    {
+        return LoadObject<T>(typeof(T).Name, saveID);
     }
     #endregion
 
