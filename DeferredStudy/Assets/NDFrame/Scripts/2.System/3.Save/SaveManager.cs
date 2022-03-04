@@ -3,12 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;   // 好像是二进制文件引入
+using System;
+
+/// <summary>
+/// 一个存档的数据
+/// </summary>
+public class SaveItem
+{
+    public int saveID { get; private set; }
+    public DateTime lastSaveTime { get; private set; }
+    public SaveItem(int saveID, DateTime lastSaveTime)  // 构造函数
+    {
+        this.saveID = saveID;
+        this.lastSaveTime = lastSaveTime;
+    }
+
+    public void UpdateTime(DateTime lastSaveTime)
+    {
+        this.lastSaveTime = lastSaveTime;
+    }
+
+}
 
 /// <summary>
 /// 存档管理器
 /// </summary>
 public static class SaveManager
 {
+    /// <summary>
+    /// 存档管理器的设置数据
+    /// </summary>
+    private class SaveManagerData
+    {
+        public int currID = 0;                                      // 当前存档ID
+        public List<SaveItem> saveItemList = new List<SaveItem>();  // 所有存档列表
+    }
+
+    private static SaveManagerData saveManagerData;
+
     private const string saveDirName = "saveData";      // 存档的保存
     private const string settingDirName = "setting";    // 设置的保存 ： 1.全局数据的保存(分辨率、按键) 2.存档的设置保存。这个是不受玩家影响的
     private static readonly string saveDirPath;         // 存档文件夹路径
@@ -32,7 +64,73 @@ public static class SaveManager
         {
             Directory.CreateDirectory(settingDirPath);
         }
+
+        // TODO：获取 SaveManagerData
+        saveManagerData = new SaveManagerData();
     }
+
+    #region 关于存档
+    /// <summary>
+    /// 获取SaveItem
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static SaveItem GetSaveItem(int id)
+    {
+        for (int i = 0; i < saveManagerData.saveItemList.Count; i++)
+        {
+            if (saveManagerData.saveItemList[i].saveID == id)
+            {
+                return saveManagerData.saveItemList[i];
+            }
+        }
+        return null;
+    }
+    /// <summary>
+    /// 添加一个存档
+    /// </summary>
+    /// <returns></returns>
+    public static SaveItem CreateSaveItem()
+    {
+        SaveItem saveItem = new SaveItem(saveManagerData.currID, DateTime.Now);
+        saveManagerData.saveItemList.Add(saveItem);
+        saveManagerData.currID += 1;
+        // TODO：更新 saveManagerData 写入磁盘
+        return saveItem;
+    }
+    /// <summary>
+    /// 删除存档
+    /// </summary>
+    /// <param name="saveID">存档的ID</param>
+    public static void DeleteSaveItem(int saveID)
+    {
+        string itemDir = GetSavePath(saveID, false);
+        // 如果路径存在且有效
+        if (itemDir != null)    
+        {
+            // 把这个存档下的文件递归删除
+            Directory.Delete(itemDir, true);
+        }
+        saveManagerData.saveItemList.Remove(GetSaveItem(saveID));
+        // 移除缓存
+        RemoveCache(saveID);
+        // TODO：更新 saveManagerData 写入磁盘
+    }
+    public static void DeleteSaveItem(SaveItem saveItem)
+    {
+        string itemDir = GetSavePath(saveItem.saveID, false);
+        // 如果路径存在且有效
+        if (itemDir != null)
+        {
+            // 把这个存档下的文件递归删除
+            Directory.Delete(itemDir, true);
+        }
+        saveManagerData.saveItemList.Remove(saveItem);
+        // 移除缓存
+        RemoveCache(saveItem.saveID);
+        // TODO：更新 saveManagerData 写入磁盘
+    }
+    #endregion
 
     #region 关于缓存
     /// <summary>
@@ -88,6 +186,15 @@ public static class SaveManager
             return null;
         }
     }
+
+    /// <summary>
+    /// 移除缓存
+    /// </summary>
+    /// <param name="saveID"></param>
+    private static void RemoveCache(int saveID)
+    {
+        cacheDic.Remove(saveID);
+    }
     #endregion
 
     #region 关于对象
@@ -99,16 +206,27 @@ public static class SaveManager
     /// <param name="saveID">存档的ID</param>
     public static void SaveObject(object saveObject, string saveFileName, int saveID = 0)   // 单存档不需要考虑saveID所以是0
     {
-        // 存档所在的文件夹路径
-        string dirPath = GetSavePath(saveID, true);
-        // 具体的对象要保存的路径
-        string savePath = dirPath + "/" + saveFileName;
-        // 具体的保存
-        SaveFile(saveObject, savePath);
+        string dirPath = GetSavePath(saveID, true);         // 存档所在的文件夹路径
+        string savePath = dirPath + "/" + saveFileName;     // 具体的对象要保存的路径
+        SaveFile(saveObject, savePath);                     // 具体的保存
 
-        // 更新缓存
-        SetCache(saveID, saveFileName, saveObject);
-        // TODO: 更新存档时间
+        
+        GetSaveItem(saveID).UpdateTime(DateTime.Now);       // 更新存档时间
+        // TODO：更新SaveManagerData 写入磁盘 
+        SetCache(saveID, saveFileName, saveObject);         // 更新缓存
+
+    }
+
+    public static void SaveObject(object saveObject, string saveFileName, SaveItem saveItem)
+    {
+        string dirPath = GetSavePath(saveItem.saveID, true);         // 存档所在的文件夹路径
+        string savePath = dirPath + "/" + saveFileName;     // 具体的对象要保存的路径
+        SaveFile(saveObject, savePath);                     // 具体的保存
+
+
+        saveItem.UpdateTime(DateTime.Now);       // 更新存档时间
+        // TODO：更新SaveManagerData 写入磁盘 
+        SetCache(saveItem.saveID, saveFileName, saveObject);         // 更新缓存
     }
 
     /// <summary>
@@ -119,6 +237,15 @@ public static class SaveManager
     public static void SaveObject(object saveObject, int saveID = 0)
     {
         SaveObject(saveObject,saveObject.GetType().Name, saveID);
+    }
+
+    /// <summary>
+    /// 保存对象至某个存档中
+    /// </summary>
+    /// <param name="saveObject">要保存的对象</param>
+    public static void SaveObject(object saveObject, SaveItem saveItem)
+    {
+        SaveObject(saveObject, saveObject.GetType().Name, saveItem);
     }
 
     /// <summary>
@@ -148,11 +275,32 @@ public static class SaveManager
     /// 从某个具体的存档中加载某个对象
     /// </summary>
     /// <typeparam name="T">要返回的实际类型</typeparam>
+    /// <param name="saveFileName">文件名称</param>
+    /// <returns></returns>
+    public static T LoadObject<T>(string saveFileName, SaveItem saveItem) where T : class
+    {
+        return LoadObject<T>(saveFileName, saveItem.saveID);
+    }
+
+    /// <summary>
+    /// 从某个具体的存档中加载某个对象
+    /// </summary>
+    /// <typeparam name="T">要返回的实际类型</typeparam>
     /// <param name="id">存档ID</param>
     /// <returns></returns>
     public static T LoadObject<T>(int saveID = 0) where T : class
     {
         return LoadObject<T>(typeof(T).Name, saveID);
+    }
+
+    /// <summary>
+    /// 从某个具体的存档中加载某个对象
+    /// </summary>
+    /// <typeparam name="T">要返回的实际类型</typeparam>
+    /// <returns></returns>
+    public static T LoadObject<T>(SaveItem saveItem) where T : class
+    {
+        return LoadObject<T>(typeof(T).Name, saveItem.saveID);
     }
     #endregion
 

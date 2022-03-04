@@ -15,10 +15,12 @@ public class Test : MonoBehaviour
 {
     void Start()
     {
-        TestSave ts = new TestSave() { Name = "李四" };
-        // SaveManager.SaveObject(ts);
-        Debug.Log(SaveManager.LoadObject<TestSave>().Name); // 从磁盘走的
-        Debug.Log(SaveManager.LoadObject<TestSave>().Name); // 缓存出来的
+        SaveItem saveItem = SaveManager.CreateSaveItem();
+        SaveManager.SaveObject(new TestSave() { Name = "Neilyodog"}, saveItem);
+
+        Debug.Log(SaveManager.LoadObject<TestSave>().Name);
+        SaveManager.DeleteSaveItem(saveItem);
+        Debug.Log(SaveManager.LoadObject<TestSave>().Name); // 这里为了验证是否找的到，因为找不到所以会报错
     }
     private void Update()
     {
