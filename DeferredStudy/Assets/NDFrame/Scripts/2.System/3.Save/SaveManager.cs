@@ -4,10 +4,12 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;   // 好像是二进制文件引入
 using System;
+using System.Linq;
 
 /// <summary>
 /// 一个存档的数据
 /// </summary>
+[Serializable] // 不加标签是没法进行二进制的读写或保存的
 public class SaveItem
 {
     public int saveID { get; private set; }
@@ -33,6 +35,7 @@ public static class SaveManager
     /// <summary>
     /// 存档管理器的设置数据
     /// </summary>
+    [Serializable] // 不加标签是没法进行二进制的读写或保存的
     private class SaveManagerData
     {
         public int currID = 0;                                      // 当前存档ID
@@ -48,7 +51,7 @@ public static class SaveManager
 
     // 存档中对象的缓存字典
     //                          <存档ID，<文件名称，实际的对象>>
-    private static Dictionary<int, Dictionary<string, object>> cacheDic = new Dictionary<int, Dictionary<string, object>>(); 
+    private static Dictionary<int, Dictionary<string, object>> cacheDic = new Dictionary<int, Dictionary<string, object>>();
 
     static SaveManager()
     {
@@ -65,9 +68,108 @@ public static class SaveManager
             Directory.CreateDirectory(settingDirPath);
         }
 
-        // TODO：获取 SaveManagerData
-        saveManagerData = new SaveManagerData();
+        // 获取SaveManagerData
+        InitSaveManagerData();
     }
+
+    #region 存档设置
+    /// <summary>
+    /// 初始化存档管理器数据
+    /// </summary>
+    /// <returns></returns>
+    private static void InitSaveManagerData()
+    {
+        saveManagerData = LoadFile<SaveManagerData>(saveDirPath + "/SaveManagerData");
+        if (saveManagerData == null)
+        {
+            saveManagerData = new SaveManagerData();
+            UpdataSaveManagerData();
+        }
+    }
+
+    /// <summary>
+    /// 更新存档管理器数据
+    /// </summary>
+    public static void UpdataSaveManagerData()
+    {
+        SaveFile(saveManagerData, saveDirPath + "/SaveManagerData");
+    }
+
+    /// <summary>
+    /// 获取所有存档
+    /// 最新的在最后面
+    /// </summary>
+    /// <returns></returns>
+    public static List<SaveItem> GetSaveItems()
+    {
+        return saveManagerData.saveItemList;
+    }
+
+    /// <summary>
+    /// 获取所有存档
+    /// 最新的在最前面
+    /// </summary>
+    /// <returns></returns>
+    public static List<SaveItem> GetAllSaveItemByCreatTime()
+    {
+        List<SaveItem> saveItems = new List<SaveItem>(saveManagerData.saveItemList.Count);
+        for (int i = 0; i < saveManagerData.saveItemList.Count; i++)    // 对列表反转
+        {
+            saveItems[i] = saveManagerData.saveItemList[saveManagerData.saveItemList.Count - (i + 1)];
+        }
+        return saveItems;
+    }
+
+    /// <summary>
+    /// 获取所有存档
+    /// 最新更新的在最上面
+    /// </summary>
+    /// <returns></returns>
+    public static List<SaveItem> GetAllSaveItemByUpdataTime()
+    {
+        List<SaveItem> saveItems = new List<SaveItem>(saveManagerData.saveItemList.Count);
+        for (int i = 0; i < saveManagerData.saveItemList.Count; i++)
+        {
+            saveItems[i] = saveManagerData.saveItemList[i];
+        }
+        OrderByUnpdataTimeComparer orderBy = new OrderByUnpdataTimeComparer();  // 排序
+        saveItems.Sort(orderBy);
+        return saveItems;
+    }
+
+    private class OrderByUnpdataTimeComparer : IComparer<SaveItem>
+    {
+        public int Compare(SaveItem x, SaveItem y)  // 实现接口出来的
+        {
+            if (x.lastSaveTime > y.lastSaveTime)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取所有存档
+    /// 万能解决方案
+    /// </summary>
+    public static List<SaveItem> GetAllSaveItem<T>(Func<SaveItem, T> orderFunc, bool isDescending = false)
+    {
+        if (isDescending)
+        {
+            return saveManagerData.saveItemList.OrderByDescending(orderFunc).ToList();       // 这里用到了命名空间 Linq
+        }
+        else
+        {
+            return saveManagerData.saveItemList.OrderBy(orderFunc).ToList();       // 这里用到了命名空间 Linq
+        }
+        
+        
+    }
+    #endregion
 
     #region 关于存档
     /// <summary>
@@ -95,7 +197,8 @@ public static class SaveManager
         SaveItem saveItem = new SaveItem(saveManagerData.currID, DateTime.Now);
         saveManagerData.saveItemList.Add(saveItem);
         saveManagerData.currID += 1;
-        // TODO：更新 saveManagerData 写入磁盘
+        // 更新 saveManagerData 写入磁盘
+        UpdataSaveManagerData();
         return saveItem;
     }
     /// <summary>
@@ -114,7 +217,8 @@ public static class SaveManager
         saveManagerData.saveItemList.Remove(GetSaveItem(saveID));
         // 移除缓存
         RemoveCache(saveID);
-        // TODO：更新 saveManagerData 写入磁盘
+        // 更新 saveManagerData 写入磁盘
+        UpdataSaveManagerData();
     }
     public static void DeleteSaveItem(SaveItem saveItem)
     {
@@ -128,7 +232,8 @@ public static class SaveManager
         saveManagerData.saveItemList.Remove(saveItem);
         // 移除缓存
         RemoveCache(saveItem.saveID);
-        // TODO：更新 saveManagerData 写入磁盘
+        // 更新 saveManagerData 写入磁盘
+        UpdataSaveManagerData();
     }
     #endregion
 
@@ -212,7 +317,8 @@ public static class SaveManager
 
         
         GetSaveItem(saveID).UpdateTime(DateTime.Now);       // 更新存档时间
-        // TODO：更新SaveManagerData 写入磁盘 
+        // 更新 saveManagerData 写入磁盘
+        UpdataSaveManagerData();
         SetCache(saveID, saveFileName, saveObject);         // 更新缓存
 
     }
@@ -225,7 +331,8 @@ public static class SaveManager
 
 
         saveItem.UpdateTime(DateTime.Now);       // 更新存档时间
-        // TODO：更新SaveManagerData 写入磁盘 
+        // 更新 saveManagerData 写入磁盘
+        UpdataSaveManagerData();
         SetCache(saveItem.saveID, saveFileName, saveObject);         // 更新缓存
     }
 
@@ -316,7 +423,8 @@ public static class SaveManager
     /// <returns></returns>
     private static string GetSavePath(int saveID, bool createDir = true)
     {
-        // TODO : 严正是否有某个存档
+        // 严正是否有某个存档
+        if (GetSaveItem(saveID)==null) throw new Exception("ND:saveID 存档不存在！");
 
         string saveDir = saveDirPath + "/" + saveID;
         // 确定文件夹是否存在

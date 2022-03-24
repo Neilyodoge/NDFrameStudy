@@ -18,9 +18,8 @@ public class Test : MonoBehaviour
         SaveItem saveItem = SaveManager.CreateSaveItem();
         SaveManager.SaveObject(new TestSave() { Name = "Neilyodog"}, saveItem);
 
-        Debug.Log(SaveManager.LoadObject<TestSave>().Name);
+        Debug.Log(SaveManager.LoadObject<TestSave>(saveItem.saveID).Name);
         SaveManager.DeleteSaveItem(saveItem);
-        Debug.Log(SaveManager.LoadObject<TestSave>().Name); // 这里为了验证是否找的到，因为找不到所以会报错
     }
     private void Update()
     {
