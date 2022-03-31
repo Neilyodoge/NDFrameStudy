@@ -31,8 +31,8 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        targetDup = (Input.GetKey(KeyUp) ? 1.0f : 0) - (Input.GetKey(KeyDown) ? 1.0f : 0);          // ()?():()
-        targetDright = (Input.GetKey(KeyRight) ? 1.0f : 0) - (Input.GetKey(KeyLeft) ? 1.0f : 0);
+        targetDup = (Input.GetKey(KeyUp)? 1.0f:0) - (Input.GetKey(KeyDown)? 1.0f:0);          // ()?():()
+        targetDright = (Input.GetKey(KeyRight)? 1.0f:0) - (Input.GetKey(KeyLeft)? 1.0f:0);
         if (inputEnable == false)
         {
             targetDup = 0;
@@ -40,6 +40,6 @@ public class PlayerInput : MonoBehaviour
         }
         // 平滑
         Dup = Mathf.SmoothDamp(Dup, targetDup, ref velocityDup, DirBlendSpeed);
-        Dup = Mathf.SmoothDamp(Dright, targetDright, ref velocityDright, DirBlendSpeed);
+        Dright = Mathf.SmoothDamp(Dright, targetDright, ref velocityDright, DirBlendSpeed);
     }
 }

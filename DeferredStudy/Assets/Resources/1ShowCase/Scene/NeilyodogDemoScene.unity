@@ -397,6 +397,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 488056364}
+  - component: {fileID: 488056366}
+  - component: {fileID: 488056365}
   m_Layer: 0
   m_Name: PlayerHandle
   m_TagString: Untagged
@@ -420,6 +422,41 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &488056365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488056363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2111cb01a2321ba4daf34e5ae34b311c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  model: {fileID: 2036080050}
+  pi: {fileID: 0}
+  anim: {fileID: 0}
+--- !u!114 &488056366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488056363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f36de26473e7ecd4ca68b0dfbc0ca133, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KeyUp: w
+  KeyDown: s
+  KeyLeft: a
+  KeyRight: d
+  Dup: 0
+  Dright: 0
+  DirBlendSpeed: 0.1
+  inputEnable: 1
 --- !u!1 &876928029
 GameObject:
   m_ObjectHideFlags: 0
