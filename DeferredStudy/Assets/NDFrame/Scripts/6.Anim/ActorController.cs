@@ -29,8 +29,10 @@ public class ActorController : MonoBehaviour
         anim.SetFloat("forward", pi.Dmag * ((pi.run) ? 2.0f : 1.0f));   // 因为run就是值为2，所以直接*2就行
         if (pi.Dmag > 0.1f) // 如果没有松手。原因是长度0的向量没法指派给forward向量
         {
+            // 将方向 球面插值 到另一方向
+            Vector3 targetForward = Vector3.Slerp(model.transform.forward, pi.Dvec, 0.25f);
             // 就修改模型的正方向，这样松手后就不会发生旋转了
-            model.transform.forward = pi.Dvec;
+            model.transform.forward = targetForward;
         }
         movingVec = pi.Dmag * model.transform.forward * walkSpeed * ((pi.run) ? runMultiplier : 1.0f);  // 计算移动量,后面的是run是两倍速
     }
