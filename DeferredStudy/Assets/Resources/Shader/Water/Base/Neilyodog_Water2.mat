@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Neilyodog_Water2
+  m_Shader: {fileID: 4800000, guid: 4f321df8751eeb54a9a6106ce3292887, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpTex:
+        m_Texture: {fileID: 2800000, guid: e51de0681d11c1f41a6b32d760aca484, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CausticTex:
+        m_Texture: {fileID: 2800000, guid: 0c7d48c85a9f0ad40904afbe525dc718, type: 3}
+        m_Scale: {x: 0.12, y: 0.12}
+        m_Offset: {x: 0, y: 0}
+    - _DistortionTex:
+        m_Texture: {fileID: 2800000, guid: 3a3cbac7b4a14034abc006d949b688fe, type: 3}
+        m_Scale: {x: 5, y: 5}
+        m_Offset: {x: 0, y: 0}
+    - _FoamNoise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTex:
+        m_Texture: {fileID: 2800000, guid: 3a3cbac7b4a14034abc006d949b688fe, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefectionTex:
+        m_Texture: {fileID: 8900000, guid: 9ba3949c34a80924d805ecfeaa1f7c9e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BumpScale: 0.5
+    - _CausticFacade: 0.1
+    - _CausticIntensity: 5
+    - _CausticScale: 1
+    - _DepthForCol: -0.91
+    - _DepthIntensity: 1.39
+    - _DistortionIntensity: 0.016
+    - _FoamRange: 1
+    - _NormalScale: 1
+    - _RefectionIntensity: 1
+    - _ShadowMask: 0.175
+    - _ShadowOn: 0
+    - _Smoothness: 1000
+    - _Specular: 1
+    - _Test: -1.5
+    - _WaterAlpha: 0.5
+    - _fresnelScale: 1
+    - _offset: 8
+    m_Colors:
+    - _CartoonSpecular: {r: 1, g: 1, b: 1, a: 1}
+    - _DistortionSpeed: {r: -0.1, g: -0.01, b: 0.1, a: 0.1}
+    - _FoamSpeed: {r: 0.1, g: 0.1, b: 0.05, a: 0.02}
+    - _FoamTint: {r: 0.70692414, g: 0.87220854, b: 0.8867924, a: 0.6666667}
+    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _NormalSpeed: {r: 0.01, g: 0.02, b: -0.02, a: 0.01}
+    - _ShadowColor: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 0.9137255}
+    - _SpecularColor: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 0.9490196}
+    - _Speed: {r: 0.1, g: 0.01, b: 0, a: 1}
+    - _WaterColor: {r: 0, g: 0.38156366, b: 0.7735849, a: 1}
+    - _WaterDepthColor: {r: 0.32325202, g: 0.55856913, b: 0.84400004, a: 1}
+    - _WaterDepthWSColor: {r: 0, g: 0.234025, b: 0.4811321, a: 1}
+    - _fresnelColor: {r: 0.2877358, g: 0.84085804, b: 1, a: 0.13333334}
+  m_BuildTextureStacks: []
