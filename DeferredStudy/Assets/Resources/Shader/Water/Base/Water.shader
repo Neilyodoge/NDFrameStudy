@@ -8,7 +8,6 @@ Shader "Neilyodog/Water"
     // 深度的时候多少会有一丢丢误差
     Properties
     {
-       
         _WaterAlpha ("Alpha", range(0, 1)) = 0.5    // 没用
         _WaterColor ("水颜色", color) = (1, 1, 1, 1)
         _WaterDepthColor ("边缘深度颜色", color) = (1, 1, 1, 1)

@@ -32,16 +32,16 @@ Material:
         m_Scale: {x: 0.12, y: 0.12}
         m_Offset: {x: 0, y: 0}
     - _DistortionTex:
-        m_Texture: {fileID: 2800000, guid: 3a3cbac7b4a14034abc006d949b688fe, type: 3}
-        m_Scale: {x: 5, y: 5}
+        m_Texture: {fileID: 2800000, guid: 50bca05c42d3cac48ab33220c67a8a9f, type: 3}
+        m_Scale: {x: 2.5, y: 2.5}
         m_Offset: {x: 0, y: 0}
     - _FoamNoise:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
-        m_Texture: {fileID: 2800000, guid: 3a3cbac7b4a14034abc006d949b688fe, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 50bca05c42d3cac48ab33220c67a8a9f, type: 3}
+        m_Scale: {x: 0.2, y: 0.2}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
@@ -67,14 +67,14 @@ Material:
     - _ShadowOn: 0
     - _Smoothness: 1000
     - _Specular: 1
-    - _Test: -1.5
+    - _Test: -24.6
     - _WaterAlpha: 0.5
     - _fresnelScale: 1
     - _offset: 8
     m_Colors:
     - _CartoonSpecular: {r: 1, g: 1, b: 1, a: 1}
-    - _DistortionSpeed: {r: -0.1, g: -0.01, b: 0.1, a: 0.1}
-    - _FoamSpeed: {r: 0.1, g: 0.1, b: 0.05, a: 0.02}
+    - _DistortionSpeed: {r: -0.1, g: -0.01, b: -0.1, a: -0.1}
+    - _FoamSpeed: {r: 0.05, g: 0.05, b: 0.05, a: 0.02}
     - _FoamTint: {r: 0.70692414, g: 0.87220854, b: 0.8867924, a: 0.6666667}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalSpeed: {r: 0.01, g: 0.02, b: -0.02, a: 0.01}

@@ -79,10 +79,11 @@ half4 frag(Varyings i): SV_Target
 
     // highLight
     // ToonHightLight
-    float2 distortionUV2 = float2(frac(_DistortionSpeed.z * _Time.y), frac(_DistortionSpeed.w * _Time.y))
+    // float2 distortionUV2 = float2(frac(_DistortionSpeed.z * _Time.y), frac(_DistortionSpeed.w * _Time.y))
+    // + (i.uv * _DistortionTex_ST.xy + _DistortionTex_ST.zw);
+     float2 distortionUV2 = float2(_DistortionSpeed.z * _Time.y, _DistortionSpeed.w * _Time.y)
     + (i.uv * _DistortionTex_ST.xy + _DistortionTex_ST.zw);
-    distortionUV2 = TexNoTile(distortionUV2);
-    half distortionTex2 = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV2.yx).x;
+    half distortionTex2 = TexNoTileY(TEXTURE2D_ARGS(_DistortionTex, sampler_DistortionTex), distortionUV2, _DistortionTex_ST, 3.14); 
     half waterNormal = min(distortionTex.x, distortionTex2);
     half4 ToonSpecular = smoothstep(0.55, 0.65, waterNormal);   // 这里随便算了一下，可控一些可以参数开出来
     ToonSpecular = ToonSpecular * _CartoonSpecular;
@@ -108,14 +109,13 @@ half4 frag(Varyings i): SV_Target
     ///////// ref叠加没写呢
     
     // foam
-    float2 foamUV = float2(frac(_FoamSpeed.x * _Time.y), frac(_FoamSpeed.x * _Time.y)) + (i.PositionWS.xz * _FoamTex_ST.xy + _FoamTex_ST.zw);
-    //foamUV = TexNoTile(foamUV);
-    half foamTex = SAMPLE_TEXTURE2D(_FoamTex, sampler_FoamTex, foamUV).r;
+    float2 foamUV = float2(_FoamSpeed.x * _Time.y, _FoamSpeed.x * _Time.y) + (i.PositionWS.xz * _FoamTex_ST.xy + _FoamTex_ST.zw);
+    half foamTex = TexNoTileY(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex), foamUV, _DistortionTex_ST, 3.14); 
     half foam = smoothstep(0, foamTex.r * _FoamRange, depthWater);
 
     // fresnel
     half NoV = saturate(dot(N, V));
-    half3 fresnelTint = (1 - NoV) * _fresnelScale * _fresnelColor.rgb;
+    half3 fresnelTint = (1 - NoV * NoV * NoV) * _fresnelScale * _fresnelColor.rgb;    // 三次方更线性
 
     // color blend
     // depthWater 扭曲
@@ -131,6 +131,7 @@ half4 frag(Varyings i): SV_Target
     Tint.rgb = lerp(_ShadowColor.rgb * Tint.rgb, Tint.rgb, saturate(light.shadowAttenuation));            // 叠加接受阴影
     Tint.rgb += lerp(0, fresnelTint, _fresnelColor.a);                                                      // 叠加菲尼尔
     Tint.rgb = MixFog(Tint.rgb, i.fogCoord);                                                              // 混合Fog
+    // return half4(distortionTex2.rrr,1);
     return saturate(Tint);
     // return half4(specular.rrr, 1);
 }

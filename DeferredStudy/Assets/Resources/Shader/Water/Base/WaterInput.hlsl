@@ -80,48 +80,35 @@ float2 TexNoTile(float2 InputUV)
     InputUV.xy += center;
     return InputUV;
 }
-// TEXTURE2D(tex); SAMPLER(samplerTex);
-// #define UNITY_DECLARE_TEX2D(tex) Texture2D tex; SamplerState sampler##tex
-real4 TexNoTileY(TEXTURE2D_PARAM(tex, samplerTex),  float2 uv) {
-    half w1;
-    half w2;
-    half w3;
-    half2 vertex1;
-    half2 vertex2;
-    half2 vertex3;
-    float2 uv1;
-    float2 uv2;
-    float2 uv3;
-	float2x2 gridToSkewedGrid = float2x2(1,0,-0.57735,1.1547);
-    float2 skewedCoord = mul(gridToSkewedGrid,uv);
-    int2 baseID = int2(floor(skewedCoord));
-    half3 temp = half3(frac(skewedCoord),0);
-    temp.z = 1 - temp.x - temp.y;
-    if(temp.z>0)
-    {
-        w1 = temp.z;
-        w2 = temp.y;
-        w3 = temp.x;
-        vertex1 = baseID;
-        vertex2 = baseID + int2(0,1);
-        vertex3 = baseID + int2(1,0);
-    }
-    else
-    {
-        w1 = -temp.z;
-        w2 = 1 - temp.y;
-        w3 = 1 - temp.x;
-        vertex1 = baseID + int2(1,1);
-        vertex2 = baseID + int2(0,1);
-        vertex3 = baseID + int2(1,0);
-    }
-    uv1 = uv + frac(sin(mul(half2x2(127.1,311.7,269.5,183.3),vertex1)) * 43758.5453);
-    uv2 = uv + frac(sin(mul(half2x2(127.1,311.7,269.5,183.3),vertex2)) * 43758.5453);
-    uv3 = uv + frac(sin(mul(half2x2(127.1,311.7,269.5,183.3),vertex3)) * 43758.5453);
-    float4 color1 = SAMPLE_TEXTURE2D(tex,samplerTex,uv1);
-    float4 color2 = SAMPLE_TEXTURE2D(tex,samplerTex,uv2);
-    float4 color3 = SAMPLE_TEXTURE2D(tex,samplerTex,uv3);
-    return color1 + color2 + color3;
+
+real2 Rotate2D(float2 uv, float2 center, float rotation){
+    uv -= center;
+    float s = sin(rotation);
+    float c = cos(rotation);
+    //center rotation matrix
+    float2x2 rMatrix = float2x2(c, -s, s, c);
+    rMatrix *= 0.5;
+    rMatrix += 0.5;
+    rMatrix = rMatrix*2 - 1;
+    //multiply the UVs by the rotation matrix
+    uv.xy = mul(uv.xy, rMatrix);
+    uv += center;
+    return uv;
+}
+
+// 注意:用这个函数，uv不能frac
+real TexNoTileY(TEXTURE2D_PARAM(tex, samplerTex),  float2 uv, float4 _ST ,float rotation) {
+    float2 a = uv * _ST.xy;
+    float2 aa = floor(a) * 0.6;
+    float aT = SAMPLE_TEXTURE2D(tex, samplerTex, aa + _ST.zw).r; // add
+    float2 b = frac(a);
+    float2 rot = Rotate2D(b, float2(0.5,0.5), aT * rotation);// add
+    float2 finalUVa = aT + rot;
+    float A = SAMPLE_TEXTURE2D(tex, samplerTex, finalUVa).r;
+    float T = saturate(smoothstep(0.8,1,length((b-0.5)*2)));
+    float B = SAMPLE_TEXTURE2D(tex, samplerTex, a).r;
+    return lerp(A,B,T); //float4(float2(a.x,a.y),1,1);//
+
 }
 
 #endif
