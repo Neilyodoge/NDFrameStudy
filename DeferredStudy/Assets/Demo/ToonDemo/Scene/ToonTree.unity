@@ -1540,5 +1540,25 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7957648289969812963, guid: 585676277f421b44e815a6d7636aff99, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 7957648289969812963, guid: 585676277f421b44e815a6d7636aff99, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 7957648289969812963, guid: 585676277f421b44e815a6d7636aff99, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 7957648289969812963, guid: 585676277f421b44e815a6d7636aff99, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -9.561
+      objectReference: {fileID: 0}
+    - target: {fileID: 7957648289969812963, guid: 585676277f421b44e815a6d7636aff99, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -7.83
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 585676277f421b44e815a6d7636aff99, type: 3}

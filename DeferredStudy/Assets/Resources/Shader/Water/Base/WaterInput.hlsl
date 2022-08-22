@@ -9,6 +9,7 @@
 
 
 CBUFFER_START(UnityPerMaterial)
+float _waveSpeed,_flatNormal;
 float4 _WaveA,_WaveB;
 float _SHIntensity;
 float _CartoonSpecularRoughness;
@@ -54,66 +55,31 @@ TEXTURE2D(_CausticTex);             SAMPLER(sampler_CausticTex);
 
 float3 TransformTangentToWorldNormal(float3x3 TBN, float4 normalTex ,float NormalScale)
 {
-    float3 normalTS = UnpackNormalScale(normalTex,NormalScale);         //解包，也就是将法线从-1,1重新映射回0,1
+    // Texture Type = NormalMap
+    //float3 normalTS = UnpackNormalScale(normalTex,NormalScale);         //解包，也就是将法线从[0,1]重新映射回[-1,1]
+    // Texture Type = Default
+    float3 normalTS = normalTex;
+    normalTS.xy = (normalTS * 2 - 1) * NormalScale;
     normalTS.z = sqrt(1.0 - saturate(dot(normalTS.xy, normalTS.xy)));
-    float3 bumpWS = NormalizeNormalPerPixel(mul(normalTS,TBN));                       //将切线空间中的法线转换到世界空间中
-    return bumpWS;
+    float3 bumpWS = TransformTangentToWorld(normalTS,TBN);                       //将切线空间中的法线转换到世界空间中
+    return normalize(bumpWS);
 }
 
-// 法线混合方式 UND
-// https://zhuanlan.zhihu.com/p/546804069
+// 法线混合方式 UDN
 // https://blog.selfshadow.com/publications/blending-in-detail/?tdsourcetag=s_pcqq_aiomsg
 float3 UNDNormal(float3 n1, float3 n2)
 {
-    // ReorientedNormal
-    // float3 t = n1 * float3(2, 2, 2) + float3(-1, -1, 0);
-    // float3 u = n2 * float3(-2, -2, -2) + float3(1, 1, -1);
-    // float3 r = t * dot(t, u) / t.x - u;
-    // return r;
-
     // UNDNormal
     float3 r = float3(n1.xy + n2.xy,n1.z);
     return normalize(r);
 }
 
-// float4 SSSColor(float3 lightDir, float3 viewDir, float3 normal, float _Distortion, float waveHeight, float SSSMask)
-// {
-//     float3 H = normalize(-lightDir + normal * _Distortion);
-//     float I = pow(saturate(dot(viewDir, -H)), _Power) * _SSSscale * waveHeight * SSSMask;
-
-//     return _SSSColor * I;
-// }
-
-float Kajiya(half3 T ,half3 H,float exponent){
-    float ToH = dot (T,H);
-    float sinToH = sqrt(1-ToH*ToH);
-    float dirAtten = smoothstep(-1,0,ToH);
-    return dirAtten * pow(sinToH,exponent);
-}
-
-// 去除重合度算法，只支持灰度图
-float2 TexNoTile(float2 InputUV)
+float3 GerstnerWave(float4 wave, float3 p, inout float3 tangent, inout float3 binormal)
 {
-    float2 center = floor(InputUV) + 0.5;
-    float Rotation = frac(sin(dot(floor(InputUV), float2(12.9898, 78.233))) * 43758.5453);
-    Rotation = floor(saturate(Rotation) * 1060 / 90) * 90 * 1 * 57.3;
-    InputUV -= center;
-    float s = sin(Rotation);
-    float c = cos(Rotation);
-    float2x2 rMatrix = float2x2(c, -s, s, c);
-    rMatrix *= 0.5;
-    rMatrix += 0.5;
-    rMatrix = rMatrix * 2 - 1;
-    InputUV.xy = mul(InputUV.xy, rMatrix);
-    InputUV.xy += center;
-    return InputUV;
-}
-
-float3 GerstnerWave (float4 wave, float3 p, inout float3 tangent, inout float3 binormal) {
     float steepness = wave.z;
     float wavelength = wave.w;
     float k = 2 * UNITY_PI / wavelength;
-    float c = sqrt(2 / k);                // _WaveSpeed
+    float c = sqrt(_waveSpeed / k);               
     float2 d = normalize(wave.xy);
     float f = k * (dot(d, p.xz) - c * _Time.y);
     float a = steepness / k;                // _Amplitude
@@ -173,7 +139,7 @@ half GGX_HeighLight(half r,half NoH,half3 LoH)
         float A = SAMPLE_TEXTURE2D(tex, samplerTex, finalUVa).r;
         float T = saturate(smoothstep(0.8, 1, length((b - 0.5) * 2)));
         float B = SAMPLE_TEXTURE2D(tex, samplerTex, a).r;
-        return lerp(A, B, T); //float4(float2(a.x,a.y),1,1);//
+        return lerp(A, B, T) ; 
 
     }
 #endif // _NOTILING

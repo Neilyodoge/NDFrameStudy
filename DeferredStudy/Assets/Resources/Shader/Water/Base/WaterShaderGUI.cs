@@ -15,7 +15,8 @@ public class WaterShaderGUI : ShaderGUI
         shadowPart = 4,
         VertexAnim = 5,
         heightLight = 6,
-        bb = 7
+        flatNormal = 7,
+        aa
     }
 
     private DebugOption debugOption;

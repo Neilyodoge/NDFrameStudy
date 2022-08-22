@@ -7,12 +7,11 @@ Shader "Neilyodog/Water"
         // 法线需要设置成法线贴图
     Properties
     {
-        _SS("SS",color) = (1,1,1,1)
         _SHIntensity("环境光比例",range(0,1)) = 1
+        _waveSpeed("wave速度",float) = 9.8
         _WaveA("_WaveA",Vector) = (0, 0, 0, 0)  // xy方向，z强度，w tiling
         _WaveB("_WaveB",Vector) = (0, 0, 0, 0)
 
-        _highLightDir("虚拟光方向",Vector) = (0, 0, 0, 0)
         [Toggle]_UseBlend("开启混色",int) = 1
         [Toggle]_UseRamp("UseRamp",int) = 1
         _ramp("ramp",2d) = "black" {}
@@ -32,6 +31,7 @@ Shader "Neilyodog/Water"
 
         [Space(10)]
         [Header(Normal)]
+        _flatNormal("法线平整距离",range(0,0.05)) = 0
         _BumpTex ("Normal", 2D) = "white" { }
         _WaterBumpScale ("法线强度", range(0, 2)) = 0.5
         _NormalSpeed ("法线速度", Vector) = (0, 0, 0, 0)    // xy:Normal  zw:DetailNormal
@@ -104,7 +104,7 @@ Shader "Neilyodog/Water"
             #pragma fragment frag
             #pragma multi_compile_fog
             // receive shadow
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE // P5要把_CASCADE去掉
             #pragma multi_compile _ _SHADOWS_SOFT // 软阴影
 
             // Debug
