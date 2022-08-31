@@ -9,6 +9,7 @@
 
 
 CBUFFER_START(UnityPerMaterial)
+float4 _WaterSideTint;
 float _waveSpeed,_flatNormal;
 float4 _WaveA,_WaveB;
 float _SHIntensity;
@@ -16,7 +17,7 @@ float _CartoonSpecularRoughness;
 float4 _highLightDir;
 float _debug1, _Debug;
 float _VertexIntensity, _CartoonSpecularScale;
-float _FoamSide, _FoamHeight;
+float _FoamSide, _FoamHeight,_DampSide;
 float4 _WaterColor, _WaterSideColor, _SpecularColor, _CartoonSpecular;
 float _DepthIntensity;
 half4 _FoamSpeed;
@@ -38,7 +39,7 @@ half4 _WaterDepthWSColor;
 half _fresnelScale;
 half4 _fresnelColor;
 //feature
-int _NoTiling,_UseRamp,_UseBlend;
+int _NoTiling,_UseRamp,_UseBlend,_UseWaterSide;
 float4 _SS;
 CBUFFER_END
 

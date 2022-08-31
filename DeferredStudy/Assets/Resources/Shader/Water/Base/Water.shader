@@ -1,10 +1,10 @@
 Shader "Neilyodog/Water"
 {
     //* 水下还有小问题，采样不太对
-    // Neilyodog 2021.12.13
-        // 默认深水颜色部分是不同透明的
+    // Neilyodog 2022.8.31
         // 焦散的uv是DepthVS,剩下基本都是WS
-        // 法线需要设置成法线贴图
+        // 转片的方向会导致ToonHeightLight效果出问题，没查原因
+    // 顶点色R控制扭曲强度和顶点动画强度。建议岸边画点
     Properties
     {
         _SHIntensity("环境光比例",range(0,1)) = 1
@@ -75,14 +75,19 @@ Shader "Neilyodog/Water"
         _CausticFacade ("焦散立面", range(0, 0.5)) = 0.15
 
         [Space(10)]
+        [Toggle(_WATERSIDE)] _UseWaterSide("使用WaterSide",int) = 0
         [Header(Foam)]
         _FoamSpeed ("泡沫速度/焦散速度", Vector) = (0, 0, 0, 0)
         _FoamTex ("泡沫纹理", 2D) = "white" { }
         _FoamTint ("泡沫颜色", color) = (1, 1, 1, 1)
         _FoamRange ("泡沫范围", range(0, 1)) = 1
         _DepthIntensity ("深度强度", range(0, 10)) = 1
-        _FoamSide ("_FoamSide", float) = 1
-        _FoamHeight ("_FoamHeight", float) = 0
+        [Header(WaterSide)]
+        _WaterSideTint("岸边潮湿颜色",Color) = (1,1,1,1)
+        _FoamSide ("水边范围", float) = 0.8
+        _DampSide ("潮湿范围", float) = 0.32
+        _FoamHeight ("水边高度修正值", float) = 1  // 用来锁定waterside的范围
+
 
         _debug1("1",float) = 0
         [HideInInspector]_Debug("Debug", Float) = 1
@@ -110,6 +115,7 @@ Shader "Neilyodog/Water"
             // Debug
             #pragma shader_feature _ _DEBUGMODE
             #pragma shader_feature_local _NOTILING  // 去贴图重复度用的,但只能用在灰度图上
+            #pragma shader_feature_local _WATERSIDE // Foam和WaterSide效果
 
             #include "WaterPass.hlsl"
             

@@ -96,8 +96,10 @@ Material:
     - _WaterBumpScale: 0.5
     - _debug: 0
     - _debug1: 0
+    - _flatNormal: 0
     - _fresnelScale: 1
     - _offset: 8
+    - _waveSpeed: 9.8
     m_Colors:
     - _CartoonSpecular: {r: 0, g: 0, b: 0, a: 1}
     - _DistortionSpeed: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
@@ -109,6 +111,7 @@ Material:
     - _ShadowColor: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 0.9137255}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 0.9490196}
     - _Speed: {r: 0.1, g: 0.01, b: 0, a: 1}
+    - _TestColor: {r: 1, g: 1, b: 1, a: 1}
     - _VertexAnimSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _WaterColor: {r: 0, g: 0.47169834, b: 0.7075472, a: 1}
     - _WaterDepthColor: {r: 0.009611944, g: 0.46095073, b: 0.6792453, a: 1}

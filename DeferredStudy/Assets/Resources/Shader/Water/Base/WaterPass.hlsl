@@ -9,10 +9,12 @@ struct Attributes
     float2 uv: TEXCOORD0;
     float3 normalOS: NORMAL;
     float4 tangentOS: TANGENT;
+    float4 Color : COLOR;
 };
 struct Varyings
 {
     float4 PositionHCS: SV_POSITION;
+    float4 Color : COLOR;
     float2 uv: TEXCOORD0;
     float fogCoord: TEXCOORD1;
     float3 PositionVS: TEXCOORD2;  // view Space
@@ -27,11 +29,18 @@ struct Varyings
 Varyings vert(Attributes v)
 {
     Varyings o = (Varyings)0;
+    o.Color = v.Color;
     // 法线相关
     VertexNormalInputs normal = GetVertexNormalInputs(v.normalOS, v.tangentOS);
     o.tangentWS = normal.tangentWS;
     o.bitangentWS = normal.bitangentWS;
     o.normalWS = normal.normalWS;
+    // 单独算下waterdepth，让边缘的地方顶点动画更弱
+    float2 ScreenUV = TransformObjectToHClip(v.PositionOS.xyz).xy / _ScreenParams.xy;
+    half depthTex = SAMPLE_TEXTURE2D_LOD(_CameraDepthTexture, sampler_CameraDepthTexture, ScreenUV,0).r;
+    half depthScene = LinearEyeDepth(depthTex, _ZBufferParams);
+    half depthWater = depthScene + TransformWorldToView(v.PositionOS.xyz).z;
+
     // 顶点动画部分
     o.PositionWS = TransformObjectToWorld(v.PositionOS.xyz);
     float2 animUV = float2(frac(_VertexAnimSpeed.x * _Time.y), frac(_VertexAnimSpeed.y * _Time.y))        
@@ -40,7 +49,7 @@ Varyings vert(Attributes v)
     float3 VertexAnim = GerstnerWave(_WaveA, o.PositionWS, o.tangentWS, o.bitangentWS); // 这里有个问题,法线是贴图前的
     VertexAnim += GerstnerWave(_WaveB, o.PositionWS, o.tangentWS, o.bitangentWS);
     VertexAnim = (VertexAnim + pow(animTex,6) * _VertexIntensity)/2;
-    o.PositionWS += VertexAnim;
+    o.PositionWS += VertexAnim * v.Color.r;
     o.vecterAnim = VertexAnim;
 
     o.PositionVS = TransformWorldToView(o.PositionWS);
@@ -76,7 +85,7 @@ half4 frag(Varyings i): SV_Target
     // Distortion
     float2 distortionUV = float2(frac(_DistortionSpeed.x * _Time.y), frac(_DistortionSpeed.y * _Time.y))
     + (i.uv * _DistortionTex_ST.xy + _DistortionTex_ST.zw);
-    half2 distortionTex = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV).xy;
+    half2 distortionTex = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex, distortionUV).xy * i.Color.r; // 削弱岸边扭曲
     float2 opaqueUV = ScreenUV + _DistortionIntensity * distortionTex;
     half depthDistortionTex = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, opaqueUV).r;
     half depthDistortionScene = LinearEyeDepth(depthDistortionTex, _ZBufferParams);
@@ -162,9 +171,7 @@ half4 frag(Varyings i): SV_Target
     half foam = smoothstep(0, foamTex.r * _FoamRange, depthWater);
     // waterSide
     float waterSide = depthWater * ((i.PositionWS.y - _FoamHeight) * sin((_Time.y * _FoamSpeed.y) * 10)/10+1);
-    waterSide = smoothstep(0,_FoamSide,waterSide);
-    // _debug = sin((_Time.y * _FoamSpeed.y) * 10)/10+1;
-
+    waterSide = smoothstep(0,_FoamSide,waterSide) * max((1-i.vecterAnim),depthDistortionWater);
 
     // color blend
     half4 Tint = half4(0,0,0,1);
@@ -178,20 +185,26 @@ half4 frag(Varyings i): SV_Target
         NoLColorBlend = SAMPLE_TEXTURE2D(_ramp,sampler_ramp,float2(NoL * 0.5 +0.5,0.1));            // 半兰伯特过度自然，ramp更可控
     float3 outputBlend = (Tint.rgb+NoLColorBlend)/2;                                                        // 根据NoL混色
     Tint.rgb = lerp(Tint.rgb,outputBlend,_UseBlend);                                                        
-    Tint = lerp(camColorTex, Tint, _WaterAlpha);                                                            // 扭曲部分颜色强度
+    Tint.rgb = lerp(camColorTex, Tint, _WaterAlpha);                                                        // 扭曲部分颜色强度
     Tint.rgb = lerp(Tint.rgb, _FoamTint.rgb, (1 - foam) * _FoamTint.a);                                     // 叠加Foam,a控制强度
-    Tint.rgb += lerp(specular * _ShadowColor.a, specular, shadowPart);                                          // 加入高光部分,_ShadowColor.a控制“阴影内高光”强度
-    Tint.rgb += lerp(finalCaustic.rgb * _ShadowColor.a,finalCaustic.rgb,shadowPart);                        // 加入焦散
+    Tint.rgb += lerp(specular * _ShadowColor.a, specular, shadowPart);                                      // 加入高光部分,_ShadowColor.a控制“阴影内高光”强度
+    Tint.rgb += lerp(finalCaustic.rgb * _ShadowColor.a,finalCaustic.rgb,shadowPart);                        // 加入焦散。焦散不能放在camColorTex一起是因为camColorTex占比很低
     Tint.rgb = lerp(_ShadowColor.rgb * Tint.rgb, Tint.rgb, shadowPart);                                     // 叠加接受阴影
     Tint.rgb = lerp(Tint.rgb,max(Tint.rgb, _fresnelColor.rgb * SH * _fresnelColor.a), fresnelPart);         // 叠加菲尼尔
     Tint.rgb *= lerp(1,SH,_SHIntensity);                                                                    // 混合SH，这种算法更适应特别暗的环境
     Tint.rgb = MixFog(Tint.rgb, i.fogCoord);                                                                // 混合Fog
+    #if _WATERSIDE
+        Tint.rgb = lerp(camColorTex * _WaterSideTint.rgb,Tint,saturate(smoothstep(0,2,waterSide)));             // 岸边,还是跟camColorTex lerp
+        float damp = smoothstep(0,2-1.9,waterSide) * (1-smoothstep(0,2,waterSide));                             // 算出潮湿部分
+        Tint.rgb = lerp(Tint.rgb,Tint.rgb*_WaterSideTint,damp);                                                 // 潮湿部分叠加
+        Tint.a *= smoothstep(0,_DampSide,waterSide);                                                              // 叠加透明，让最边缘的地方软一些
+    #endif 
 
     #if _DEBUGMODE
         switch(_Debug)
         {
             case 0: // 岸边透明部分
-            Tint.rgb = waterSide.rrr;
+            Tint.rgb = damp;
             break;
             case 1: // 水23阶深度
             Tint.rgb = saturate(depthDistortionWater + _DepthForCol);
@@ -214,13 +227,13 @@ half4 frag(Varyings i): SV_Target
             case 7: // 法线平整距离
             Tint.rgb = 1-i.PositionHCS.w * _flatNormal;
             break;
-            case 8: // 测试
-            Tint.rgb = foam;//Kajiya(i.tangentWS,H,_debug1);
+            case 8: // 顶点色
+            Tint.rgb = i.Color.rgb;
             break;
         }
     #endif
 
-    // Tint.a *= waterSide;
+    
     return saturate(Tint);
 }
 
