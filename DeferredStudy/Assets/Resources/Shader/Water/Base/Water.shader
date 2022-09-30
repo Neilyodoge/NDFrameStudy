@@ -4,6 +4,7 @@ Shader "Neilyodog/Water"
     // Neilyodog 2022.8.31
         // 焦散的uv是DepthVS,剩下基本都是WS
         // 转片的方向会导致ToonHeightLight效果出问题，没查原因
+        // 焦散其实应该跟着呼吸动
     // 顶点色R控制扭曲强度和顶点动画强度。建议岸边画点
     Properties
     {
@@ -77,7 +78,7 @@ Shader "Neilyodog/Water"
         [Space(10)]
         [Toggle(_WATERSIDE)] _UseWaterSide("使用WaterSide",int) = 0
         [Header(Foam)]
-        _FoamSpeed ("泡沫速度/焦散速度", Vector) = (0, 0, 0, 0)
+        _FoamSpeed ("泡沫速度/Y水边速度/焦散速度", Vector) = (0, 0, 0, 0)
         _FoamTex ("泡沫纹理", 2D) = "white" { }
         _FoamTint ("泡沫颜色", color) = (1, 1, 1, 1)
         _FoamRange ("泡沫范围", range(0, 1)) = 1

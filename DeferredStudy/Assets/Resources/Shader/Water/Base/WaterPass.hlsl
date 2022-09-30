@@ -197,7 +197,7 @@ half4 frag(Varyings i): SV_Target
         Tint.rgb = lerp(camColorTex * _WaterSideTint.rgb,Tint,saturate(smoothstep(0,2,waterSide)));             // 岸边,还是跟camColorTex lerp
         float damp = smoothstep(0,2-1.9,waterSide) * (1-smoothstep(0,2,waterSide));                             // 算出潮湿部分
         Tint.rgb = lerp(Tint.rgb,Tint.rgb*_WaterSideTint,damp);                                                 // 潮湿部分叠加
-        Tint.a *= smoothstep(0,_DampSide,waterSide);                                                              // 叠加透明，让最边缘的地方软一些
+        Tint.a *= smoothstep(0,_DampSide,waterSide);                                                            // 叠加透明，让最边缘的地方软一些
     #endif 
 
     #if _DEBUGMODE

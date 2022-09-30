@@ -99,7 +99,7 @@ Material:
     - _WaterAlpha: 0.85
     - _WaterBumpScale: 1
     - _debug: 2.07
-    - _debug1: 0.03
+    - _debug1: 0
     - _flatNormal: 0
     - _fresnelScale: 12.5
     - _offset: 8
