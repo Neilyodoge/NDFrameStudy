@@ -8,9 +8,16 @@ public class ActorController : MonoBehaviour
     [HideInInspector] public PlayerInput pi;    // PlayerInput脚本
     public float walkSpeed = 1.0f;
     public float runMultiplier = 2.0f;
+    public float rotSpeed = 0.2f;
+    public float jumpHigh = 3f;
+
+    [SerializeField]
     private Animator anim;
     private Rigidbody rigid;
-    private Vector3 movingVec; // 跟玩家相关的移动信息，给rigid用
+    private Vector3 planarVec; // 跟玩家相关的移动信息，给rigid用
+    private Vector3 thrustVec;
+
+    private bool lockPlanar = false;    // 锁死平面移动
 
     void Awake()        // Awake里面赋值好比较方面且符合unity gameplay框架设计原则
     {
@@ -25,22 +32,41 @@ public class ActorController : MonoBehaviour
 
     void Update()           // Time.deltaTime         1/60
     {
-        // print(pi.Dup);
-        anim.SetFloat("forward", pi.Dmag * ((pi.run) ? 2.0f : 1.0f));   // 因为run就是值为2，所以直接*2就行
-        if (pi.Dmag > 0.1f) // 如果没有松手。原因是长度0的向量没法指派给forward向量
-        {
-            // 将方向 球面插值 到另一方向
-            Vector3 targetForward = Vector3.Slerp(model.transform.forward, pi.Dvec, 0.25f);
-            // 就修改模型的正方向，这样松手后就不会发生旋转了
-            model.transform.forward = targetForward;
+        ///*! 这里确实有变化，但并不明显，感觉走合跑应该是用不同值来lerp。0.01会合适，但从idle切walk会滑步
+        anim.SetFloat("forward", pi.Dmag * Mathf.Lerp(anim.GetFloat("forward"),((pi.run) ? runMultiplier : 1.0f),0.2f));
+        if (pi.jump){   // PlayerInput那边按下了这边才变
+            anim.SetTrigger("jump");
         }
-        movingVec = pi.Dmag * model.transform.forward * walkSpeed * ((pi.run) ? runMultiplier : 1.0f);  // 计算移动量,后面的是run是两倍速
+        if (pi.Dmag > 0.1f) // 如果没有松手。原因是长度0的向量没法指派给forward向量
+        {   // 就修改模型的正方向，这样松手后就不会发生旋转了。并且用Slerp函数进行旋转插值控制转向速度
+            model.transform.forward = Vector3.Slerp(model.transform.forward, pi.Dvec, rotSpeed);
+        }
+        if (lockPlanar == false)
+        {
+            planarVec = pi.Dmag * model.transform.forward * walkSpeed * ((pi.run) ? runMultiplier : 1.0f);  // 计算移动量,后面的是run是两倍速
+        }
+        
     }
 
     // 移动，加速，减速，旋转，都要在FixedUpdate里算
     void FixedUpdate()      // Time.fixedDeltaTime    1/50
     {
-        // rigid.position += movingVec * Time.fixedDeltaTime;
-        rigid.velocity = new Vector3(movingVec.x, rigid.velocity.y, movingVec.z);   // 两种方法都行
+        // rigid.position += planarVec * Time.fixedDeltaTime;
+        rigid.velocity = new Vector3(planarVec.x, rigid.velocity.y, planarVec.z) + thrustVec;   // 两种方法都行
+        thrustVec = Vector3.zero;
+    }
+
+    public void OnJumpEnter() {
+        pi.inputEnable = false;
+        lockPlanar = true;
+        thrustVec = new Vector3(0, jumpHigh, 0);
+        // print("on jump enter");
+    }
+    public void OnJumpExit()
+    {
+        pi.inputEnable = true;
+        lockPlanar = false;
+        thrustVec = new Vector3(0, 0, 0);
+        // print("on jump exit");
     }
 }
