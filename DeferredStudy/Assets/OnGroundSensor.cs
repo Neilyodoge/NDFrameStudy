@@ -22,8 +22,16 @@ public class OnGroundSensor : MonoBehaviour
 
     void FixedUpdate()
     {
-        point1 = transform.position + transform.up * (radius- offset);
-        point2 = transform.position + transform.up * (capcol.height-offset) - transform.up * radius;
+        //point1 = transform.position - transform.up * 0.5f * capcol.height + capcol.center;
+        //point2 = transform.position + transform.up * (capcol.height-offset) - transform.up * radius + capcol.center;
+
+        point1 = transform.position - transform.up * 0.5f * (capcol.height + offset) + capcol.center;
+        point2 = transform.position + transform.up * 0.5f * (capcol.height + offset) + capcol.center;
+        Debug.DrawLine(point1, point2,Color.red);
+        Debug.DrawLine(point1 + new Vector3(0.3f, 0, 0), point2 + new Vector3(0.3f, 0, 0), Color.red);
+        Debug.DrawLine(point1 + new Vector3(-0.3f, 0, 0), point2 + new Vector3(-0.3f, 0, 0), Color.red);
+        Debug.DrawLine(point1 + new Vector3(0, 0, -0.3f), point2 + new Vector3(0, 0, -0.3f), Color.red);
+        Debug.DrawLine(point1 + new Vector3(0, 0, 0.3f), point2 + new Vector3(0, 0, 0.3f), Color.red);
 
         Collider[] outputCols = Physics.OverlapCapsule(point1, point2, radius, LayerMask.GetMask("Ground"));
         if (outputCols.Length != 0)
