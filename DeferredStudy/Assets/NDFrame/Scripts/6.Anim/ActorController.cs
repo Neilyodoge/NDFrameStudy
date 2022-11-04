@@ -9,7 +9,8 @@ public class ActorController : MonoBehaviour
     public float walkSpeed = 1.0f;
     public float runMultiplier = 2.0f;
     public float rotSpeed = 0.2f;
-    public float jumpHigh = 3f;
+    public float jumpVelocity = 3f;
+    public float rollVelocity = 3f;
 
     [SerializeField]
     private Animator anim;
@@ -34,6 +35,10 @@ public class ActorController : MonoBehaviour
     {
         ///*! 这里确实有变化，但并不明显，感觉走合跑应该是用不同值来lerp。0.01会合适，但从idle切walk会滑步
         anim.SetFloat("forward", pi.Dmag * Mathf.Lerp(anim.GetFloat("forward"),((pi.run) ? runMultiplier : 1.0f),0.2f));
+        if (rigid.velocity.magnitude > 1.0f)    // 刚体速度
+        {
+            anim.SetTrigger("roll");
+        }
         if (pi.jump){   // PlayerInput那边按下了这边才变
             anim.SetTrigger("jump");
         }
@@ -60,24 +65,18 @@ public class ActorController : MonoBehaviour
     /// Message processing block
     /// </summary>
     public void OnJumpEnter() {
+        thrustVec = new Vector3(0, jumpVelocity, 0);
         pi.inputEnable = false;
         lockPlanar = true;
-        thrustVec = new Vector3(0, jumpHigh, 0);
-        // print("on jump enter");
     }
-    //public void OnJumpExit()
-    //{
-    //    pi.inputEnable = true;
-    //    lockPlanar = false;
-    //}
     public void IsGround()
     {
-        print("is on ground");
+        //print("is on ground");
         anim.SetBool("isGround",true);
     }
     public void IsNotGround()
     {
-        print("is not on ground!!!");
+        //print("is not on ground!!!");
         anim.SetBool("isGround", false);
     }
     public void OnGroundEnter() 
@@ -85,6 +84,15 @@ public class ActorController : MonoBehaviour
         pi.inputEnable = true;
         lockPlanar = false;
     }
-
+    public void OnFallEnter()   // 解决掉落没有弧线的
+    {
+        pi.inputEnable = false;
+        lockPlanar = true;
+    }
+    public void OnRollEnter() {
+        thrustVec = new Vector3(0, rollVelocity, 0);
+        pi.inputEnable = false;
+        lockPlanar = true;
+    }
 
 }
