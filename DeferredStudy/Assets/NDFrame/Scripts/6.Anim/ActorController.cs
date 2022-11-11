@@ -34,12 +34,13 @@ public class ActorController : MonoBehaviour
     void Update()           // Time.deltaTime         1/60
     {
         ///*! 这里确实有变化，但并不明显，感觉走合跑应该是用不同值来lerp。0.01会合适，但从idle切walk会滑步
-        anim.SetFloat("forward", pi.Dmag * Mathf.Lerp(anim.GetFloat("forward"),((pi.run) ? runMultiplier : 1.0f),0.2f));
+        anim.SetFloat("forward", pi.Dmag * Mathf.Lerp(anim.GetFloat("forward"), ((pi.run) ? runMultiplier : 1.0f), 0.2f));
         if (rigid.velocity.magnitude > 1.0f)    // 刚体速度
         {
             anim.SetTrigger("roll");
         }
-        if (pi.jump){   // PlayerInput那边按下了这边才变
+        if (pi.jump)
+        {   // PlayerInput那边按下了这边才变
             anim.SetTrigger("jump");
         }
         if (pi.Dmag > 0.1f) // 如果没有松手。原因是长度0的向量没法指派给forward向量
@@ -50,7 +51,7 @@ public class ActorController : MonoBehaviour
         {
             planarVec = pi.Dmag * model.transform.forward * walkSpeed * ((pi.run) ? runMultiplier : 1.0f);  // 计算移动量,后面的是run是两倍速
         }
-        
+
     }
 
     // 移动，加速，减速，旋转，都要在FixedUpdate里算
@@ -64,7 +65,8 @@ public class ActorController : MonoBehaviour
     /// <summary>
     /// Message processing block
     /// </summary>
-    public void OnJumpEnter() {
+    public void OnJumpEnter()
+    {
         thrustVec = new Vector3(0, jumpVelocity, 0);
         pi.inputEnable = false;
         lockPlanar = true;
@@ -72,14 +74,14 @@ public class ActorController : MonoBehaviour
     public void IsGround()
     {
         //print("is on ground");
-        anim.SetBool("isGround",true);
+        anim.SetBool("isGround", true);
     }
     public void IsNotGround()
     {
         //print("is not on ground!!!");
         anim.SetBool("isGround", false);
     }
-    public void OnGroundEnter() 
+    public void OnGroundEnter()
     {
         pi.inputEnable = true;
         lockPlanar = false;
@@ -89,10 +91,20 @@ public class ActorController : MonoBehaviour
         pi.inputEnable = false;
         lockPlanar = true;
     }
-    public void OnRollEnter() {
+    public void OnRollEnter()
+    {
         thrustVec = new Vector3(0, rollVelocity, 0);
         pi.inputEnable = false;
         lockPlanar = true;
+    }
+    public void OnJabEnter()
+    {
+        pi.inputEnable = false;
+        lockPlanar = true;
+    }
+    public void OnJabUpdate()
+    {
+        thrustVec = model.transform.forward * anim.GetFloat("jabVelocity"); // 得用模型的前方向的反方向
     }
 
 }
