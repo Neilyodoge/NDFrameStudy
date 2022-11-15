@@ -51,7 +51,12 @@ public class ActorController : MonoBehaviour
         {
             planarVec = pi.Dmag * model.transform.forward * walkSpeed * ((pi.run) ? runMultiplier : 1.0f);  // 计算移动量,后面的是run是两倍速
         }
-
+        #region debug 模型forward方向
+#if UNITY_EDITOR
+        // 后面可以迭代个长度和当前方向和目标方向
+        Debug.DrawRay(model.transform.position, model.transform.forward, Color.blue);
+#endif
+        #endregion
     }
 
     // 移动，加速，减速，旋转，都要在FixedUpdate里算

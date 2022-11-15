@@ -16,12 +16,19 @@ public class PlayerInput : MonoBehaviour
     public string keyC;
     public string keyD;
 
+    public string keyJRight;
+    public string keyJLeft;
+    public string keyJUp;
+    public string keyJDown;
+
     [Header("====== Output Signals =====")]
     public float Dup;
     public float Dright;
     public float DirBlendSpeed = 0.1f;
     public float Dmag;                  // 坐标系中的距离长度
     public Vector3 Dvec;                // 坐标系中的方向向量
+    public float Jup;                   // 相机方向信号
+    public float Jright;
 
     // 1. pressing signal
     public bool run;
@@ -47,8 +54,12 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        targetDup = (Input.GetKey(KeyUp)? 1.0f:0) - (Input.GetKey(KeyDown)? 1.0f:0);          // ()?():()
-        targetDright = (Input.GetKey(KeyRight)? 1.0f:0) - (Input.GetKey(KeyLeft)? 1.0f:0);
+        Jup = (Input.GetKey(keyJUp) ? 1.0f : 0) - (Input.GetKey(keyJDown) ? 1.0f : 0);  // 上就是1，下就是-1
+        Jright = (Input.GetKey(keyJRight) ? 1.0f : 0) - (Input.GetKey(keyJLeft) ? 1.0f : 0); 
+
+        #region Move 相关
+        targetDup = (Input.GetKey(KeyUp) ? 1.0f : 0) - (Input.GetKey(KeyDown) ? 1.0f : 0);          // ()?():()
+        targetDright = (Input.GetKey(KeyRight) ? 1.0f : 0) - (Input.GetKey(KeyLeft) ? 1.0f : 0);
         if (inputEnable == false)
         {
             targetDup = 0;
@@ -66,7 +77,9 @@ public class PlayerInput : MonoBehaviour
         Dvec = DrightCircle * transform.right + DupCircle * transform.forward;
 
         run = Input.GetKey(keyA);
-        // jump相关
+        #endregion
+
+        #region Jamp 相关
         bool newJamp = Input.GetKey(keyB);
         //jump = newJamp;
         if (newJamp != lastJump && newJamp == true) {
@@ -76,6 +89,7 @@ public class PlayerInput : MonoBehaviour
             jump = false;
         }
         lastJump = newJamp;
+        #endregion
     }
 
     private Vector2 SquareToCircle(Vector2 input) {
