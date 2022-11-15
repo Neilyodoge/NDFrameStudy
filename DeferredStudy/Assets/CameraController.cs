@@ -37,6 +37,13 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        var angle = Vector3.Angle(transform.forward, characterCamera.transform.position - gameObject.transform.position) / 10.0f;//差角的1/10
+        var lookRo = Quaternion.LookRotation(characterCamera.transform.position - gameObject.transform.position, Vector3.up);
+        var sAngle = horizontalSpeed * Time.deltaTime;
+        //gameObject.transform.rotation = Quaternion.RotateTowards(gameObject.transform.rotation, lookRo, sAngle < angle ? sAngle : angle);
+        //这里记得计算差角，并且永远不要用1帧直接完成全部旋转，防止短距移动的跳镜（比如人物上楼梯的时候）
+        //
+
         Vector3 tempModelEuler = model.transform.eulerAngles;
 
         // characterCamera 水平方向旋转
@@ -51,6 +58,7 @@ public class CameraController : MonoBehaviour
         transform.localPosition = new Vector3(0, 0, -cameraZOffset); // 手动调整 cameraPos 位置或者在这里做offset，我选择后者
         // characterCamera.transform.position = Vector3.Lerp(characterCamera.transform.position,transform.position,0.2f);    // 插值切换
         characterCamera.transform.position = Vector3.SmoothDamp(characterCamera.transform.position, transform.position, ref cameraDampVelocity, cameraDampValue);
-        characterCamera.transform.eulerAngles = transform.eulerAngles;
+        //characterCamera.transform.eulerAngles = transform.eulerAngles;
+        characterCamera.transform.rotation = Quaternion.RotateTowards(gameObject.transform.rotation, lookRo, sAngle < angle ? sAngle : angle);
     }
 }
