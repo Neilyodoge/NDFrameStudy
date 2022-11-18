@@ -11,8 +11,8 @@ public class PlayerInput : MonoBehaviour
     public string KeyLeft = "a";
     public string KeyRight = "d";
 
-    public string keyA;
-    public string keyB;
+    public string keyRun;
+    public string keyJump;
     public string keyC;
     public string keyD;
 
@@ -27,8 +27,6 @@ public class PlayerInput : MonoBehaviour
     public float DirBlendSpeed = 0.1f;
     public float Dmag;                  // 坐标系中的距离长度
     public Vector3 Dvec;                // 坐标系中的方向向量
-    public float Jup;                   // 相机方向信号
-    public float Jright;
 
     // 1. pressing signal
     public bool run;
@@ -45,18 +43,9 @@ public class PlayerInput : MonoBehaviour
     private float velocityDup;          // 会自动算，无需参数
     private float velocityDright;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        Jup = (Input.GetKey(keyJUp) ? 1.0f : 0) - (Input.GetKey(keyJDown) ? 1.0f : 0);  // 上就是1，下就是-1
-        Jright = (Input.GetKey(keyJRight) ? 1.0f : 0) - (Input.GetKey(keyJLeft) ? 1.0f : 0); 
-
         #region Move 相关
         targetDup = (Input.GetKey(KeyUp) ? 1.0f : 0) - (Input.GetKey(KeyDown) ? 1.0f : 0);          // ()?():()
         targetDright = (Input.GetKey(KeyRight) ? 1.0f : 0) - (Input.GetKey(KeyLeft) ? 1.0f : 0);
@@ -76,11 +65,11 @@ public class PlayerInput : MonoBehaviour
         Dmag = Mathf.Sqrt((DupCircle * DupCircle) + (DrightCircle * DrightCircle));
         Dvec = DrightCircle * transform.right + DupCircle * transform.forward;
 
-        run = Input.GetKey(keyA);
+        run = Input.GetKey(keyRun);
         #endregion
 
         #region Jamp 相关
-        bool newJamp = Input.GetKey(keyB);
+        bool newJamp = Input.GetKey(keyJump);
         //jump = newJamp;
         if (newJamp != lastJump && newJamp == true) {
             jump = true;

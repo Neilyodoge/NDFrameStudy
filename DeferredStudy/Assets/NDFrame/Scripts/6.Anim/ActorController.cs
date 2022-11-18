@@ -6,11 +6,13 @@ public class ActorController : MonoBehaviour
 {
     public GameObject model;  // 当前控制的模型
     [HideInInspector] public PlayerInput pi;    // PlayerInput脚本
+    public CamRotController crc;
     public float walkSpeed = 1.0f;
     public float runMultiplier = 2.0f;
     public float rotSpeed = 0.2f;
     public float jumpVelocity = 3f;
     public float rollVelocity = 3f;
+    [HideInInspector] public float moveSpeed;   // 速度
 
     [SerializeField]
     private Animator anim;
@@ -25,16 +27,22 @@ public class ActorController : MonoBehaviour
         pi = GetComponent<PlayerInput>();
         anim = model.GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        //------------------配置Debug------------------
-        if (pi == null) Debug.LogError(this.name + "缺少 PlayerInput 组件");
-        if (anim == null) Debug.LogError(model.name + "缺少 Animator 组件");
-        if (rigid == null) Debug.LogError(this.name + "缺少 Rigidbody 组件");
+        #region debug
+#if UNITY_EDITOR
+        if (pi == null) Debug.LogError("**Anim部分" + this.name + "缺少 PlayerInput 组件");
+        if (anim == null) Debug.LogError("**Anim部分" + model.name + "缺少 Animator 组件");
+        if (rigid == null) Debug.LogError("**Anim部分" + this.name + "缺少 Rigidbody 组件");
+        if (crc == null) Debug.LogError("**Anim部分" + this.name + "CamRotController 脚本");
+#endif
+        #endregion
+
     }
 
     void Update()           // Time.deltaTime         1/60
     {
         ///*! 这里确实有变化，但并不明显，感觉走合跑应该是用不同值来lerp。0.01会合适，但从idle切walk会滑步
         anim.SetFloat("forward", pi.Dmag * Mathf.Lerp(anim.GetFloat("forward"), ((pi.run) ? runMultiplier : 1.0f), 0.2f));
+        moveSpeed = walkSpeed * ((pi.run) ? runMultiplier : 1.0f);
         if (rigid.velocity.magnitude > 1.0f)    // 刚体速度
         {
             anim.SetTrigger("roll");
@@ -49,12 +57,15 @@ public class ActorController : MonoBehaviour
         }
         if (lockPlanar == false)
         {
-            planarVec = pi.Dmag * model.transform.forward * walkSpeed * ((pi.run) ? runMultiplier : 1.0f);  // 计算移动量,后面的是run是两倍速
+            planarVec = pi.Dmag * model.transform.forward * moveSpeed;  // 计算移动量,后面的是run是两倍速
         }
         #region debug 模型forward方向
 #if UNITY_EDITOR
-        // 后面可以迭代个长度和当前方向和目标方向
-        Debug.DrawRay(model.transform.position, model.transform.forward, Color.blue);
+        // 后面可以迭代个长度
+        Vector3 debugCamFwd = Camera.main.gameObject.transform.forward;
+        debugCamFwd.y = 0;
+        Debug.DrawRay(model.transform.position, debugCamFwd, new Color(0f, 0.3f, 0.5f));    // 目标 forward方向
+        Debug.DrawRay(transform.position, transform.forward, Color.blue);                   // 当前 forward方向
 #endif
         #endregion
     }
@@ -65,8 +76,10 @@ public class ActorController : MonoBehaviour
         // rigid.position += planarVec * Time.fixedDeltaTime;
         rigid.velocity = new Vector3(planarVec.x, rigid.velocity.y, planarVec.z) + thrustVec;   // 两种方法都行
         thrustVec = Vector3.zero;
-    }
 
+        crc.SetCamQuaternion(); // 相机旋转逻辑
+    }
+    #region Message 处理
     /// <summary>
     /// Message processing block
     /// </summary>
@@ -111,5 +124,7 @@ public class ActorController : MonoBehaviour
     {
         thrustVec = model.transform.forward * anim.GetFloat("jabVelocity"); // 得用模型的前方向的反方向
     }
+    #endregion
+
 
 }
