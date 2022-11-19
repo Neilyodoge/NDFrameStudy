@@ -1513,7 +1513,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1649895562}
-  m_LocalRotation: {x: 0.09359699, y: -0.00000001661197, z: 0.0000000015616859, w: 0.9956102}
+  m_LocalRotation: {x: 0.09359698, y: 0.000000018192916, z: -0.0000000017103099, w: 0.9956102}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2034,23 +2034,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400138, guid: 2f9d958fbcd96e44ca35a77a15e3187a, type: 3}
   m_PrefabInstance: {fileID: 1914356531}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2043302712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2043302710}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5281785fbe32be4488391fbe4acda0d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useCharacterForward: 0
-  lockToCameraForward: 1
-  turnSpeed: 10
-  sprintJoystick: 332
-  sprintKeyboard: 32
 --- !u!1001 &5729828627009733078
 PrefabInstance:
   m_ObjectHideFlags: 0
