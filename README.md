@@ -1,4 +1,4 @@
 # NDFrameStudy
 
 仅用来学习框架搭建等
-![](https://oimages2.shimonote.com/sSSTYCnNb520xnF1.gif?auth_key=1675415575-ee92477d149b4284917acf541d9b2add-0-2bd4fbd72fb3154e52ebc465a679c306&response-content-disposition=inline%3B+filename%3D%22anim2.3.gif%22%3B+filename%2A%3DUTF-8%27%27anim2.3.gif)
+<video src="https://vdn6.vzuu.com/SD/08b674e2-a3a2-11ed-b859-6a490bbcf68b-v8_f2_t1_SdFcle8N.mp4?pkey=AAWxI7HwWUnGRjOXHyyNvoGmGhNMMw6QIMbnFQZYCYeTiSe_eNB7GhLw6Oy09CMwD1EE5jI84sZYVxUADyBooUAP&c=avc.8.0&f=mp4&pu=1513c7c2&bu=http-1513c7c2&expiration=1675423623&v=ks6&pf=Web&pt=zhihu"></video>
