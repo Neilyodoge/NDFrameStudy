@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Neilyodog_Water
+  m_Shader: {fileID: 4800000, guid: 4f321df8751eeb54a9a6106ce3292887, type: 3}
+  m_ShaderKeywords: _NOTILING
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpTex:
+        m_Texture: {fileID: 2800000, guid: e51de0681d11c1f41a6b32d760aca484, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CausticTex:
+        m_Texture: {fileID: 2800000, guid: fc200d895de957f49936b83f87de0ea4, type: 3}
+        m_Scale: {x: 0.2, y: 0.2}
+        m_Offset: {x: 0, y: 0}
+    - _DetailBumpTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistortionTex:
+        m_Texture: {fileID: 2800000, guid: 50bca05c42d3cac48ab33220c67a8a9f, type: 3}
+        m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 0, y: 0}
+    - _FoamNoise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefectionTex:
+        m_Texture: {fileID: 8900000, guid: 9ba3949c34a80924d805ecfeaa1f7c9e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VertexAnim:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ramp:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BumpScale: 0.5
+    - _CartoonSpecularRoughness: 0.5
+    - _CartoonSpecularScale: 0.5
+    - _CausticFacade: 0.1
+    - _CausticIntensity: 5
+    - _CausticScale: 1
+    - _Debug: 0
+    - _DepthForCol: -0.54
+    - _DepthIntensity: 0.72
+    - _DetailBumpScale: 0.5
+    - _DistortionIntensity: 0.016
+    - _FoamHeight: 0
+    - _FoamRange: 0.048
+    - _FoamSide: 1
+    - _HeightScale: 1
+    - _NoTiling: 1
+    - _NormalScale: 1
+    - _RefectionIntensity: 1
+    - _SHIntensity: 1
+    - _ShadowMask: 0.175
+    - _ShadowOn: 0
+    - _Smoothness: 422.5
+    - _Specular: 1
+    - _Test: -1.5
+    - _UseBlend: 0
+    - _UseRamp: 1
+    - _VertexIntensity: 0
+    - _WaterAlpha: 0.5
+    - _WaterBumpScale: 0.5
+    - _debug: 0
+    - _debug1: 0
+    - _flatNormal: 0
+    - _fresnelScale: 1
+    - _offset: 8
+    - _waveSpeed: 9.8
+    m_Colors:
+    - _CartoonSpecular: {r: 0, g: 0, b: 0, a: 1}
+    - _DistortionSpeed: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
+    - _FoamSpeed: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
+    - _FoamTint: {r: 0.57155573, g: 0.707028, b: 0.7169812, a: 0.25490198}
+    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _NormalSpeed: {r: 0.01, g: 0.02, b: -0.02, a: 0.01}
+    - _SS: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowColor: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 0.9137255}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 0.9490196}
+    - _Speed: {r: 0.1, g: 0.01, b: 0, a: 1}
+    - _TestColor: {r: 1, g: 1, b: 1, a: 1}
+    - _VertexAnimSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _WaterColor: {r: 0, g: 0.47169834, b: 0.7075472, a: 1}
+    - _WaterDepthColor: {r: 0.009611944, g: 0.46095073, b: 0.6792453, a: 1}
+    - _WaterDepthWSColor: {r: 0, g: 0.22764564, b: 0.3490566, a: 1}
+    - _WaterSideColor: {r: 0.27144888, g: 0.5441514, b: 0.9433962, a: 1}
+    - _WaveA: {r: 0, g: 0, b: 0, a: 0}
+    - _WaveB: {r: 0, g: 0, b: 0, a: 0}
+    - _fresnelColor: {r: 0.745283, g: 0.745283, b: 0.745283, a: 0.12941177}
+    - _highLightDir: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
