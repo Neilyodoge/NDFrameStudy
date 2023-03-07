@@ -137,6 +137,8 @@ half4 frag(Varyings i): SV_Target
     float3 N = bumpWS;    //waterNormal;// normalize(i.NormalWS);
     float3 vertexN = normalize(i.normalWS);
     float3 L = light.direction;
+    float3 customLDir = normalize(_CustSunPos - i.PositionWS);  // 自定义sun Dir
+    L = lerp(L,customLDir,_CustomSunPosON);
     half3 V = normalize(_WorldSpaceCameraPos.xyz - i.PositionWS);
     half3 H = normalize(V + L);
     half NoH = saturate(dot(N, H));

@@ -12,6 +12,8 @@ Shader "Neilyodog/Water"
         _waveSpeed("wave速度",float) = 9.8
         _WaveA("_WaveA",Vector) = (0, 0, 0, 0)  // xy方向，z强度，w tiling
         _WaveB("_WaveB",Vector) = (0, 0, 0, 0)
+        [Toggle]_CustomSunPosON("开启自定义sun位置",int) = 0
+        _CustSunPos("自定义sun位置",Vector) = (0, 0, 0, 0)
 
         [Toggle]_UseBlend("开启混色",int) = 1
         [Toggle]_UseRamp("UseRamp",int) = 1
@@ -89,8 +91,6 @@ Shader "Neilyodog/Water"
         _DampSide ("潮湿范围", float) = 0.32
         _FoamHeight ("水边高度修正值", float) = 1  // 用来锁定waterside的范围
 
-
-        _debug1("1",float) = 0
         [HideInInspector]_Debug("Debug", Float) = 1
         
     }

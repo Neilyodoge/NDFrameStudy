@@ -15,7 +15,7 @@ float4 _WaveA,_WaveB;
 float _SHIntensity;
 float _CartoonSpecularRoughness;
 float4 _highLightDir;
-float _debug1, _Debug;
+float _Debug;
 float _VertexIntensity, _CartoonSpecularScale;
 float _FoamSide, _FoamHeight,_DampSide;
 float4 _WaterColor, _WaterSideColor, _SpecularColor, _CartoonSpecular;
@@ -40,6 +40,8 @@ half _fresnelScale;
 half4 _fresnelColor;
 //feature
 int _NoTiling,_UseRamp,_UseBlend,_UseWaterSide;
+int _CustomSunPosON;
+float4 _CustSunPos;
 float4 _SS;
 CBUFFER_END
 
@@ -54,6 +56,7 @@ TEXTURE2D(_CameraOpaqueTexture);    SAMPLER(sampler_CameraOpaqueTexture);
 TEXTURECUBE(_RefectionTex);         SAMPLER(sampler_RefectionTex);
 TEXTURE2D(_CausticTex);             SAMPLER(sampler_CausticTex);
 
+// 图片就不用一定是Normal格式了
 float3 TransformTangentToWorldNormal(float3x3 TBN, float4 normalTex ,float NormalScale)
 {
     // Texture Type = NormalMap
@@ -71,8 +74,10 @@ float3 TransformTangentToWorldNormal(float3x3 TBN, float4 normalTex ,float Norma
 float3 UNDNormal(float3 n1, float3 n2)
 {
     // UNDNormal
-    float3 r = float3(n1.xy + n2.xy,n1.z);
-    return normalize(r);
+    //float3 r = float3(n1.xy + n2.xy,n1.z);
+    float3 r = normalize(float3(n1.xy + n2.xy, n1.z));
+
+    return r;
 }
 
 float3 GerstnerWave(float4 wave, float3 p, inout float3 tangent, inout float3 binormal)
