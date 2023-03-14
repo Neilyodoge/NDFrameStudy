@@ -3,7 +3,7 @@ Shader "BaseToon/Character"
     Properties
     { 
         [Toggle(_HAIR)] _is_hair("头发材质",int) = 0
-        [Toggle(_FACE)] _is_hair("面部材质",int) = 0
+        [Toggle(_FACE)] _is_face("面部材质",int) = 0
         _MainTex("主贴图",2D) = "white"{}
         _MainColor("主颜色",color) = (1,1,1,1)
         _Brightness("亮度",range(0.5,2)) = 1
@@ -13,15 +13,21 @@ Shader "BaseToon/Character"
 
         _WarmSideColor("暖边颜色",color) =  (1,1,1,1)
         _NoLWarmSide("半影暖边范围",range(0,0.5)) = 0
-        
+        [Header(Ramp)]
         _RampMap("Ramp",2D) = "white"{}
         _RampRange("RampRange",range(0,1)) = 1
+        _FaceSdf("Sdf图",2D) = "white"{}
+        _FaceShadowBlur("Sdf半影锐利度",range(0,1)) = 0
+        _FaceShadowWarmSide("Sdf暖边范围",range(0,1)) = 0.2
 
         _MaskTex("_MaskTex",2D) = "black"{}
         _AnisoColor("Aniso颜色",color) = (1,1,1,1)
         _AnisoHairFresnelPow("Aniso范围",range(0,10)) = 5
         _AnisoHairFresnelIntensity("Aniso强度",range(0,5)) = 1
 
+        [HideInInspector] _FaceUpDir("_FaceUpDir",vector) = (1,1,1,1)   // TODO:zheli 
+        [HideInInspector] _FaceFrontDir("_FaceFrontDir",vector) = (1,1,1,1)
+        [HideInInspector] _FaceRightDir("_FaceRightDir",vector) = (1,1,1,1)
 
         _Debug("debug",float) = 1
     }
@@ -43,6 +49,8 @@ Shader "BaseToon/Character"
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma shader_feature_local _HAIR
             #pragma shader_feature_local _FACE
+
+            #define PI 3.1415
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"  
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"   
@@ -67,6 +75,9 @@ Shader "BaseToon/Character"
             CBUFFER_START(UnityPerMaterial)
             float4 _MainTex_ST,_RampMap_ST;
             float4 _MainColor,_ShadowColor,_WarmSideColor,_AnisoColor;
+            float4 _FaceUpDir,_FaceFrontDir,_FaceRightDir;
+            float _FaceShadowBlur;
+            float _FaceShadowWarmSide;
             float _RampRange;
             float _ReceiveShadowOffset;
             float _NoLSmooth;
@@ -82,6 +93,7 @@ Shader "BaseToon/Character"
             TEXTURE2D(_MainTex);    SAMPLER(sampler_MainTex);
             TEXTURE2D(_RampMap);    SAMPLER(sampler_RampMap);
             TEXTURE2D(_MaskTex);    SAMPLER(sampler_MaskTex);
+            TEXTURE2D(_FaceSdf);    SAMPLER(sampler_FaceSdf); 
 
             Varyings vert(Attributes v)
             {
@@ -115,6 +127,8 @@ Shader "BaseToon/Character"
                 float halfNol = saturate(nol * 0.5 + 0.5);
                 float smoothNol = smoothstep(0,_NoLSmooth,nol); // 防止溢出
                 float warmSideNol = smoothstep(0,_NoLSmooth,nol - _NoLWarmSide);
+                
+                
 
                 // aniso
                 float anisoPart = 0;
@@ -125,6 +139,25 @@ Shader "BaseToon/Character"
                     anisoPart = anisoHair;
                 #endif
 
+                // faceSdf
+                // TODO: sdf图的下巴需要全部处理成阴影
+                // TODO: 上下sdf
+                // TODO: 模型拆分眼球和脸部
+                #if defined(_FACE)
+                    // face sdf Vector
+                    float dotF = dot(_FaceFrontDir.xz,l.xz);
+                    float dotR = dot(_FaceRightDir.xz,l.xz);
+                    float dotRAcos = acos(dotF) / PI;
+                    // face sdf Calculate
+                    float faceSdfSign = sign(dotR) * 0.5 + 0.5; // right=0 left=1
+                    float2 faceSdfUV = float2(lerp(i.uv.x,1-i.uv.x,faceSdfSign),i.uv.y);    // 这里根据符号来判断左右脸
+                    float faceSdfTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,faceSdfUV).r;
+                    float faceShadow = smoothstep(dotRAcos-_FaceShadowBlur, dotRAcos+_FaceShadowBlur, faceSdfTex);
+                    float faceShadowWarmSide = smoothstep(dotRAcos-_FaceShadowBlur-_FaceShadowWarmSide, dotRAcos+_FaceShadowBlur+_FaceShadowWarmSide, faceSdfTex);
+                    smoothNol = faceShadow;
+                    warmSideNol = faceShadowWarmSide;
+                #endif
+
                 // ramp
                 float rampSide = step(smoothNol,0.95);
                 half4 ShadowRamp1 = SAMPLE_TEXTURE2D(_RampMap, sampler_RampMap, float2(halfNol * rampSide, _RampRange));
@@ -132,7 +165,7 @@ Shader "BaseToon/Character"
 
                 // finalColor
                 // TODO:暖边颜色根据sun走
-                half4 finalColor = lerp(shadowColor,lerp(_WarmSideColor,texColor,warmSideNol),smoothNol);   // 颜色混合 //lerp(暗部颜色，lerp(暖边颜色)，nol)
+                half4 finalColor = lerp(shadowColor,lerp(_WarmSideColor,texColor,warmSideNol),smoothNol);   // 颜色混合 //lerp(暗部颜色，lerp(亮部和暖边颜色)，nol)
                 finalColor += anisoPart * _AnisoColor;    // 混合各向异性部分
                 
                 // Color Grading
