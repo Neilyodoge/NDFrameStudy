@@ -32,6 +32,7 @@ public class SDFFaceDir : MonoBehaviour
         faceFrontDir = faceDirObj.transform.forward;
         faceRightDir = faceDirObj.transform.right;
 
+
         faceMat.SetVector("_FaceUpDir", faceUpDir);
         faceMat.SetVector("_FaceFrontDir", faceFrontDir);
         faceMat.SetVector("_FaceRightDir", faceRightDir);
