@@ -6,6 +6,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"  // 视差相关函数
 
 
 CBUFFER_START(UnityPerMaterial)
@@ -21,7 +22,7 @@ float _FoamSide, _FoamHeight,_DampSide;
 float4 _WaterColor, _WaterSideColor, _SpecularColor, _CartoonSpecular;
 float _DepthIntensity;
 half4 _FoamSpeed;
-half4 _FoamTex_ST, _DistortionTex_ST, _BumpTex_ST, _VertexAnim_ST,_DetailBumpTex_ST;
+half4 _FoamTex_ST, _DistortionTex_ST, _BumpTex_ST, _VertexAnim_ST,_DetailBumpTex_ST,_SparkleTex_ST;
 half _FoamRange;
 half4 _FoamTint;
 half _DistortionIntensity;
@@ -38,8 +39,11 @@ half _DepthForCol;
 half4 _WaterDepthWSColor;
 half _fresnelScale;
 half4 _fresnelColor;
+float _SparkleParaIntnesity,_SparkleIntensity,_SparkleParaIntnesityMul;
+float4 _SparkleSpeed,_SparkleTint;
+
 //feature
-int _NoTiling,_UseRamp,_UseBlend,_UseWaterSide;
+int _UseRamp,_UseBlend,_UseWaterSide;
 int _CustomSunPosON;
 float4 _CustSunPos;
 float4 _SS;
@@ -55,6 +59,7 @@ TEXTURE2D(_CameraDepthTexture);     SAMPLER(sampler_CameraDepthTexture);
 TEXTURE2D(_CameraOpaqueTexture);    SAMPLER(sampler_CameraOpaqueTexture);
 TEXTURECUBE(_RefectionTex);         SAMPLER(sampler_RefectionTex);
 TEXTURE2D(_CausticTex);             SAMPLER(sampler_CausticTex);
+TEXTURE2D(_SparkleTex);             SAMPLER(sampler_SparkleTex);
 
 // 图片就不用一定是Normal格式了
 float3 TransformTangentToWorldNormal(float3x3 TBN, float4 normalTex ,float NormalScale)
@@ -115,39 +120,5 @@ half GGX_HeighLight(half r,half NoH,half3 LoH)
 	half spe = r2 / ((4*r + 2) * part * part * LoH * LoH);
 	return spe;
 }
-
-#if _NOTILING
-    real2 Rotate2D(float2 uv, float2 center, float rotation)
-    {
-        uv -= center;
-        float s = sin(rotation);
-        float c = cos(rotation);
-        //center rotation matrix
-        float2x2 rMatrix = float2x2(c, -s, s, c);
-        rMatrix *= 0.5;
-        rMatrix += 0.5;
-        rMatrix = rMatrix * 2 - 1;
-        //multiply the UVs by the rotation matrix
-        uv.xy = mul(uv.xy, rMatrix);
-        uv += center;
-        return uv;
-    }
-
-    // 注意:用这个函数，uv不能frac
-    real noTiling(TEXTURE2D_PARAM(tex, samplerTex), float2 uv, float4 _ST, float rotation)
-    {
-        float2 a = uv * _ST.xy;
-        float2 aa = floor(a) * 0.6;
-        float aT = SAMPLE_TEXTURE2D(tex, samplerTex, aa + _ST.zw).r; // add
-        float2 b = frac(a);
-        float2 rot = Rotate2D(b, float2(0.5, 0.5), aT * rotation);// add
-        float2 finalUVa = aT + rot;
-        float A = SAMPLE_TEXTURE2D(tex, samplerTex, finalUVa).r;
-        float T = saturate(smoothstep(0.8, 1, length((b - 0.5) * 2)));
-        float B = SAMPLE_TEXTURE2D(tex, samplerTex, a).r;
-        return lerp(A, B, T) ; 
-
-    }
-#endif // _NOTILING
 
 #endif

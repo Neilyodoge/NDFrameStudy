@@ -16,7 +16,8 @@ public class WaterShaderGUI : ShaderGUI
         VertexAnim = 5,
         heightLight = 6,
         flatNormal = 7,
-        VertexColor
+        VertexColor = 8,
+        Sparkle
     }
 
     private DebugOption debugOption;

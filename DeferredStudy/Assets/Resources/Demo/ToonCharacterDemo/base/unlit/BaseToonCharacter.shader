@@ -16,9 +16,9 @@ Shader "BaseToon/Character"
         [Header(Ramp)]
         _RampMap("Ramp",2D) = "white"{}
         _RampRange("RampRange",range(0,1)) = 1
-        _FaceSdf("Sdf图",2D) = "white"{}
+        _FaceSdf("Sdf图",2D) = "white"{}    // r: sdf左右范围Mask; g: sdf左右贴图
         _FaceShadowBlur("Sdf半影锐利度",range(0,1)) = 0
-        _FaceShadowWarmSide("Sdf暖边范围",range(0,1)) = 0.2
+        _FaceShadowWarmBlur("Sdf暖边范围",range(0,1)) = 0.2
 
         _MaskTex("_MaskTex",2D) = "black"{}
         _AnisoColor("Aniso颜色",color) = (1,1,1,1)
@@ -77,7 +77,7 @@ Shader "BaseToon/Character"
             float4 _MainColor,_ShadowColor,_WarmSideColor,_AnisoColor;
             float4 _FaceUpDir,_FaceFrontDir,_FaceRightDir;
             float _FaceShadowBlur;
-            float _FaceShadowWarmSide;
+            float _FaceShadowWarmBlur;
             float _RampRange;
             float _ReceiveShadowOffset;
             float _NoLSmooth;
@@ -145,17 +145,19 @@ Shader "BaseToon/Character"
                 // TODO: 模型拆分眼球和脸部
                 #if defined(_FACE)
                     // face sdf Vector
-                    float dotF = dot(_FaceFrontDir.xz,l.xz);
-                    float dotR = dot(_FaceRightDir.xz,l.xz);
-                    float dotRAcos = acos(dotF) / PI;
+                    float3 lightProjectDir = normalize(l - _FaceUpDir * dot(l,_FaceUpDir));
+                    float LPoF = dot(_FaceFrontDir,lightProjectDir);
+                    float LPoFAcos = acos(LPoF) / PI;
+                    float dotR = dot(_FaceRightDir.xz,l.xz);    // 判断左右 可以放在xz
                     // face sdf Calculate
-                    float faceSdfSign = sign(dotR) * 0.5 + 0.5; // right=0 left=1
+                    float faceSdfSign = saturate(sign(dotR) * 0.5 + 0.5); // right=0 left=1
                     float2 faceSdfUV = float2(lerp(i.uv.x,1-i.uv.x,faceSdfSign),i.uv.y);    // 这里根据符号来判断左右脸
-                    float faceSdfTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,faceSdfUV).r;
-                    float faceShadow = smoothstep(dotRAcos-_FaceShadowBlur, dotRAcos+_FaceShadowBlur, faceSdfTex);
-                    float faceShadowWarmSide = smoothstep(dotRAcos-_FaceShadowBlur-_FaceShadowWarmSide, dotRAcos+_FaceShadowBlur+_FaceShadowWarmSide, faceSdfTex);
-                    smoothNol = faceShadow;
-                    warmSideNol = faceShadowWarmSide;
+                    float faceSdfTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,faceSdfUV).g;
+                    float faceShadow = smoothstep(LPoFAcos-_FaceShadowBlur, LPoFAcos+_FaceShadowBlur, faceSdfTex);
+                    float faceShadowWarmSide = smoothstep(LPoFAcos-_FaceShadowBlur-_FaceShadowWarmBlur, LPoFAcos+_FaceShadowBlur+_FaceShadowWarmBlur, faceSdfTex);
+                    float faceSdfMask = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,i.uv).r;
+                    smoothNol = faceShadow * faceSdfMask;
+                    warmSideNol = faceShadowWarmSide * faceSdfMask;
                 #endif
 
                 // ramp
@@ -165,7 +167,7 @@ Shader "BaseToon/Character"
 
                 // finalColor
                 // TODO:暖边颜色根据sun走
-                half4 finalColor = lerp(shadowColor,lerp(_WarmSideColor,texColor,warmSideNol),smoothNol);   // 颜色混合 //lerp(暗部颜色，lerp(亮部和暖边颜色)，nol)
+                half4 finalColor = lerp(shadowColor,lerp(_WarmSideColor*texColor,texColor,warmSideNol),smoothNol);   // 颜色混合 //lerp(暗部颜色，lerp(亮部和暖边颜色)，nol)
                 finalColor += anisoPart * _AnisoColor;    // 混合各向异性部分
                 
                 // Color Grading

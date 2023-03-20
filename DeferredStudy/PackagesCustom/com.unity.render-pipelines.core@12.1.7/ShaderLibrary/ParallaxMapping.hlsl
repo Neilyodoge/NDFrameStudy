@@ -42,5 +42,12 @@ float2 ParallaxMapping(TEXTURE2D_PARAM(heightMap, sampler_heightMap), half3 view
     float2 offset = ParallaxOffset1Step(h, scale, viewDirTS);
     return offset;
 }
+//* ND 为了适配不用视差贴图的情况
+float2 ParallaxMapping(half3 viewDirTS, half scale, float2 uv)
+{
+    half h = 1;
+    float2 offset = ParallaxOffset1Step(h, scale, viewDirTS);
+    return offset;
+}
 
 #endif // UNIVERSAL_PARALLAX_MAPPING_INCLUDED

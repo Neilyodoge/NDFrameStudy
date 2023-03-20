@@ -20,10 +20,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 37_role_face
+  m_Name: 37_role_eye
   m_Shader: {fileID: 4800000, guid: 8db2f7bb08248ee44ae105e6324b5966, type: 3}
-  m_ValidKeywords:
-  - _FACE
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -63,7 +62,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FaceSdf:
-        m_Texture: {fileID: 2800000, guid: 6d86fb635e2ea7d44ba366e8ebbc1600, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -147,7 +146,7 @@ Material:
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _is_face: 1
+    - _is_face: 0
     - _is_hair: 0
     m_Colors:
     - _AnisoColor: {r: 1, g: 1, b: 1, a: 1}

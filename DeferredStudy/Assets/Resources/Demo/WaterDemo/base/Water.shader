@@ -51,9 +51,18 @@ Shader "Neilyodog/Water"
         _ShadowColor ("RGB阴影颜色A阴影内DF强度", color) = (1, 1, 1, 1) // D高光项 F菲尼尔项
 
         [Space(10)]
-        [Header(Refection))]
+        [Header(Refection)]
         _RefectionIntensity ("反射强度", range(0, 1)) = 1
         _RefectionTex ("反射贴图", Cube) = "white" { }
+
+        [Space(10)]
+        [Header(Sparkle)]
+        [HDR]_SparkleTint("闪烁颜色",color) = (1,1,1,1)
+        _SparkleTex("闪烁贴图",2D) = "white"{}
+        _SparkleParaIntnesity("闪烁视差强度",float) = 1
+        _SparkleParaIntnesityMul("闪烁多层视差强度",float) = 1
+        _SparkleIntensity("闪烁亮度",float) = 1
+        _SparkleSpeed("闪烁速度",vector) = (0,0,0,0)
 
         [Space(10)]
         [Header(HighLight)]
@@ -115,11 +124,10 @@ Shader "Neilyodog/Water"
 
             // Debug
             #pragma shader_feature _ _DEBUGMODE
-            #pragma shader_feature_local _NOTILING  // 去贴图重复度用的,但只能用在灰度图上
             #pragma shader_feature_local _WATERSIDE // Foam和WaterSide效果
 
             #include "WaterPass.hlsl"
-            
+
             ENDHLSL
 
         }

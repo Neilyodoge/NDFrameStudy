@@ -31,8 +31,7 @@ public class SDFFaceDir : MonoBehaviour
         faceUpDir = faceDirObj.transform.up;
         faceFrontDir = faceDirObj.transform.forward;
         faceRightDir = faceDirObj.transform.right;
-
-
+        
         faceMat.SetVector("_FaceUpDir", faceUpDir);
         faceMat.SetVector("_FaceFrontDir", faceFrontDir);
         faceMat.SetVector("_FaceRightDir", faceRightDir);
@@ -45,6 +44,8 @@ public class SDFFaceDir : MonoBehaviour
         Debug.DrawRay(faceDirObj.transform.position, faceFrontDir, Color.blue);
         // RED right Dir
         Debug.DrawRay(faceDirObj.transform.position, faceRightDir, Color.red);
+        // sun Dir
+        // Debug.DrawRay(RenderSettings.sun.transform.position, RenderSettings.sun.transform.forward, Color.green);
 #endif
         #endregion
     }

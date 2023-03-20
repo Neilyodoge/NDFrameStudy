@@ -23,6 +23,7 @@ struct Varyings
     float3 bitangentWS: TEXCOORD5;
     float3 normalWS: TEXCOORD6;
     float vecterAnim : TEXCOORD7;
+    float3 PositionWSnoOffset : TEXCOORD8;  // 没顶点动画的ws
     
 };
 
@@ -43,6 +44,7 @@ Varyings vert(Attributes v)
 
     // 顶点动画部分
     o.PositionWS = TransformObjectToWorld(v.PositionOS.xyz);
+    o.PositionWSnoOffset = o.PositionWS;
     float2 animUV = float2(frac(_VertexAnimSpeed.x * _Time.y), frac(_VertexAnimSpeed.y * _Time.y))        
                     + (o.PositionWS.xz * _VertexAnim_ST.xy + _VertexAnim_ST.zw);
     half animTex = SAMPLE_TEXTURE2D_LOD(_VertexAnim, sampler_VertexAnim,animUV,0).r;
@@ -121,11 +123,8 @@ half4 frag(Varyings i): SV_Target
     float2 distortionUV2 = float2(_DistortionSpeed.z * _Time.y, _DistortionSpeed.w * _Time.y)
                             + (i.uv * _DistortionTex_ST.xy + _DistortionTex_ST.zw);
     half distortionTex2 = 0;
-    #if _NOTILING                        
-        distortionTex2 = noTiling(TEXTURE2D_ARGS(_DistortionTex, sampler_DistortionTex), distortionUV2, _DistortionTex_ST, 3.14); 
-    #else
-        distortionTex2 = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex,distortionUV2);
-    #endif  //_NOTILING
+    distortionTex2 = SAMPLE_TEXTURE2D(_DistortionTex, sampler_DistortionTex,distortionUV2);
+
     // Blinn-Phong HightLight
     // Ks = 强度; Shininess = 范围
     // Specular = SpecularColor * Ks * pow(max(0,dot(N,H)), Shininess)
@@ -139,37 +138,41 @@ half4 frag(Varyings i): SV_Target
     float3 L = light.direction;
     float3 customLDir = normalize(_CustSunPos - i.PositionWS);  // 自定义sun Dir
     L = lerp(L,customLDir,_CustomSunPosON);
-    half3 V = normalize(_WorldSpaceCameraPos.xyz - i.PositionWS);
-    half3 H = normalize(V + L);
-    half NoH = saturate(dot(N, H));
-    half LoH = saturate(dot(L, H));
+    float3 V = normalize(_WorldSpaceCameraPos.xyz - i.PositionWS);
+    float3 H = normalize(V + L);
+    float NoH = saturate(dot(N, H));
+    float LoH = saturate(dot(L, H));
     float NoL = saturate(dot(N, L));
     float3 SH = SampleSH(N);
     // fresnel
-    half NoV = saturate(dot(N, V)) * _fresnelScale;
+    float NoV = saturate(dot(N, V)) * _fresnelScale;
     half fresnelPart = 1 - NoV * NoV * NoV;             // 三次方过度更线性
     fresnelPart = saturate(fresnelPart-(1-shadowPart) * (1-_ShadowColor.a));
     half4 specular = _SpecularColor /** max(0, _Specular)*/ * pow(max(0,NoH), _HeightScale);
     half waterNormal = 1-max(step(abs(bumpWS.r),0.3),step(abs(bumpWS.g),0.3));
     // 卡渲高光
     half4 ToonSpecular = (1-step(NoL,_CartoonSpecularScale)) * _CartoonSpecular;
-    ToonSpecular = ToonSpecular * i.vecterAnim;   // 这里跟顶点动画强度做了个运算
+    ToonSpecular = ToonSpecular * max(i.vecterAnim,0.1);   // 这里跟顶点动画强度做了个运算。max是为了在顶点动画强度为0的时候也有效果
     //混合两种高光
     specular = max(ToonSpecular,specular);
+
+    // Sparkle
+    half3 viewDirTS = GetViewDirectionTangentSpace(float4(i.tangentWS,-1),i.normalWS,i.PositionWSnoOffset);
+    float2 ParallaxUV = ParallaxMapping(viewDirTS,_SparkleParaIntnesity,i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw);
+    float2 ParallaxUV2 = ParallaxMapping(viewDirTS,_SparkleParaIntnesityMul,i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw);
+    float ParallaxTex = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,(ParallaxUV + frac(_Time.y * _SparkleSpeed.r)) * _SparkleTex_ST.xy + _SparkleTex_ST.zw).r;
+    float ParallaxTex2 = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,(ParallaxUV2 + frac(_Time.y * _SparkleSpeed.g)) * _SparkleTex_ST.xy + _SparkleTex_ST.zw).r;
+    float SparklePart = saturate(pow(ParallaxTex * ParallaxTex2,_SparkleIntensity));
 
     // Refection
     float3 refectionUV = reflect(N, -V);
     half4 refectionTex = SAMPLE_TEXTURECUBE(_RefectionTex, sampler_RefectionTex, refectionUV);
     ///////// ref叠加没写呢
-    
+
     // foam
     float2 foamUV = float2(_FoamSpeed.x * _Time.y, _FoamSpeed.x * _Time.y) + (i.PositionWS.xz * _FoamTex_ST.xy + _FoamTex_ST.zw);
     half foamTex = 0;
-    #if _NOTILING 
-        foamTex = noTiling(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex), foamUV, _DistortionTex_ST, 3.14) ; 
-    #else
-        foamTex = SAMPLE_TEXTURE2D(_FoamTex, sampler_FoamTex,foamUV);
-    #endif
+    foamTex = SAMPLE_TEXTURE2D(_FoamTex, sampler_FoamTex,foamUV);
     half foam = smoothstep(0, foamTex.r * _FoamRange, depthWater);
     // waterSide
     float waterSide = depthWater * ((i.PositionWS.y - _FoamHeight) * sin((_Time.y * _FoamSpeed.y) * 10)/10+1);
@@ -189,7 +192,8 @@ half4 frag(Varyings i): SV_Target
     Tint.rgb = lerp(Tint.rgb,outputBlend,_UseBlend);                                                        
     Tint.rgb = lerp(camColorTex, Tint, _WaterAlpha);                                                        // 扭曲部分颜色强度
     Tint.rgb = lerp(Tint.rgb, _FoamTint.rgb, (1 - foam) * _FoamTint.a);                                     // 叠加Foam,a控制强度
-    Tint.rgb += lerp(specular * _ShadowColor.a, specular, shadowPart);                                      // 加入高光部分,_ShadowColor.a控制“阴影内高光”强度
+    Tint.rgb += lerp(specular * _ShadowColor.a, specular, shadowPart);                                      // 加入高光部分,_ShadowColor.a控制“阴影内高光”强度。闪点叠加在这里了
+    Tint.rgb += lerp(0,SparklePart * _SparkleTint.rgb,specular);                                            // 在高光部分加入闪点
     Tint.rgb += lerp(finalCaustic.rgb * _ShadowColor.a,finalCaustic.rgb,shadowPart);                        // 加入焦散。焦散不能放在camColorTex一起是因为camColorTex占比很低
     Tint.rgb = lerp(_ShadowColor.rgb * Tint.rgb, Tint.rgb, shadowPart);                                     // 叠加接受阴影
     Tint.rgb = lerp(Tint.rgb,max(Tint.rgb, _fresnelColor.rgb * SH * _fresnelColor.a), fresnelPart);         // 叠加菲尼尔
@@ -231,6 +235,9 @@ half4 frag(Varyings i): SV_Target
             break;
             case 8: // 顶点色
             Tint.rgb = i.Color.rgb;
+            break;
+            case 9: // 闪点
+            Tint.rgb = lerp(0,SparklePart * _SparkleTint.rgb,specular);
             break;
         }
     #endif
