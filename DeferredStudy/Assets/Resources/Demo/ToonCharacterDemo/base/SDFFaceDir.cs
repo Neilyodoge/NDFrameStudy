@@ -32,9 +32,10 @@ public class SDFFaceDir : MonoBehaviour
         faceFrontDir = faceDirObj.transform.forward;
         faceRightDir = faceDirObj.transform.right;
         
-        faceMat.SetVector("_FaceUpDir", faceUpDir);
-        faceMat.SetVector("_FaceFrontDir", faceFrontDir);
-        faceMat.SetVector("_FaceRightDir", faceRightDir);
+        faceMat.SetVector("_FaceUpDir", Vector3.Normalize(faceUpDir));
+        faceMat.SetVector("_FaceFrontDir", Vector3.Normalize(faceFrontDir));
+        Debug.Log(faceMat.GetFloat("_FaceFrontDir"));
+        faceMat.SetVector("_FaceRightDir", Vector3.Normalize(faceRightDir));
 
         #region Debug
 #if UNITY_EDITOR

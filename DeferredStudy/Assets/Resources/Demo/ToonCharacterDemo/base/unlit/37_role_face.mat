@@ -63,7 +63,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FaceSdf:
-        m_Texture: {fileID: 2800000, guid: 6d86fb635e2ea7d44ba366e8ebbc1600, type: 3}
+        m_Texture: {fileID: 2800000, guid: 398e177859234e24ebefaa3cdcb1a7bd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -124,8 +124,9 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _FaceShadowBlur: 0.01
-    - _FaceShadowWarmBlur: 0.1
+    - _FaceSDFMidUVFix: 0.5
+    - _FaceShadowBlur: 0.02
+    - _FaceShadowWarmBlur: 0.01
     - _FaceShadowWarmSide: 0.02
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -154,9 +155,9 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FaceFrontDir: {r: -0.031282965, g: 0, b: -0.99951077, a: 0}
+    - _FaceFrontDir: {r: 0, g: 0, b: -1, a: 0}
     - _FaceLeftDir: {r: 1, g: 1, b: 1, a: 1}
-    - _FaceRightDir: {r: -0.99951077, g: 0, b: 0.031282965, a: 0}
+    - _FaceRightDir: {r: -1, g: 0, b: 0, a: 0}
     - _FaceUpDir: {r: 0, g: 1, b: 0, a: 0}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}

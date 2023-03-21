@@ -17,8 +17,9 @@ Shader "BaseToon/Character"
         _RampMap("Ramp",2D) = "white"{}
         _RampRange("RampRange",range(0,1)) = 1
         _FaceSdf("Sdf图",2D) = "white"{}    // r: sdf左右范围Mask; g: sdf左右贴图
-        _FaceShadowBlur("Sdf半影锐利度",range(0,1)) = 0
-        _FaceShadowWarmBlur("Sdf暖边范围",range(0,1)) = 0.2
+        _FaceShadowBlur("Sdf半影锐利度",range(0,0.2)) = 0
+        _FaceShadowWarmBlur("Sdf暖边范围",range(0,0.2)) = 0.2
+        _FaceSDFMidUVFix("sdf修正",range(-1,1)) = 0.5
 
         _MaskTex("_MaskTex",2D) = "black"{}
         _AnisoColor("Aniso颜色",color) = (1,1,1,1)
@@ -76,8 +77,7 @@ Shader "BaseToon/Character"
             float4 _MainTex_ST,_RampMap_ST;
             float4 _MainColor,_ShadowColor,_WarmSideColor,_AnisoColor;
             float4 _FaceUpDir,_FaceFrontDir,_FaceRightDir;
-            float _FaceShadowBlur;
-            float _FaceShadowWarmBlur;
+            float _FaceShadowBlur,_FaceSDFMidUVFix,_FaceShadowWarmBlur;
             float _RampRange;
             float _ReceiveShadowOffset;
             float _NoLSmooth;
@@ -144,13 +144,17 @@ Shader "BaseToon/Character"
                 // TODO: 上下sdf
                 // TODO: 模型拆分眼球和脸部
                 #if defined(_FACE)
-                    // face sdf Vector
-                    float3 lightProjectDir = normalize(l - _FaceUpDir * dot(l,_FaceUpDir));
-                    float LPoF = dot(_FaceFrontDir,lightProjectDir);
-                    float LPoFAcos = acos(LPoF) / PI;
-                    float dotR = dot(_FaceRightDir.xz,l.xz);    // 判断左右 可以放在xz
-                    // face sdf Calculate
-                    float faceSdfSign = saturate(sign(dotR) * 0.5 + 0.5); // right=0 left=1
+                    // face sdf Vector C#输入的是在C#端归一化的
+                    float LoUp = dot(l,_FaceUpDir);     // TODO:这里归一化会有问题不知道是为什么
+                    float LoRight = dot(l,_FaceRightDir);
+                    float3 lightProjectXZDir = normalize(l - _FaceUpDir*LoUp);
+                    float3 lightProjectXYDir = normalize(l - _FaceRightDir * LoRight);
+                    float LPoF = dot(_FaceFrontDir,lightProjectXZDir);
+                    float LPoFAcos = 1-(LPoF*0.5+0.5); //acos(LPoF) / PI; // 其实就是[-1,1]映射到[0,1]
+                    float dotR = dot(_FaceRightDir,lightProjectXZDir);    // 判断左右 不能用xz
+                    float SdfUVFix = (0.5-_FaceSDFMidUVFix) * 2;
+                    // face sdf Calculate 左右
+                    float faceSdfSign = sign(dotR) * 0.5 + 0.5; // right=0 left=1  0.5也是映射到[0,1]
                     float2 faceSdfUV = float2(lerp(i.uv.x,1-i.uv.x,faceSdfSign),i.uv.y);    // 这里根据符号来判断左右脸
                     float faceSdfTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,faceSdfUV).g;
                     float faceShadow = smoothstep(LPoFAcos-_FaceShadowBlur, LPoFAcos+_FaceShadowBlur, faceSdfTex);
@@ -158,6 +162,8 @@ Shader "BaseToon/Character"
                     float faceSdfMask = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,i.uv).r;
                     smoothNol = faceShadow * faceSdfMask;
                     warmSideNol = faceShadowWarmSide * faceSdfMask;
+                    // face sdf Calculate 上下
+                    //float 
                 #endif
 
                 // ramp

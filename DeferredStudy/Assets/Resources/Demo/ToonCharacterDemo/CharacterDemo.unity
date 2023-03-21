@@ -312,14 +312,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 876928029}
-  m_LocalRotation: {x: 0.21722905, y: 0.11493986, z: -0.32883596, w: 0.9118483}
-  m_LocalPosition: {x: 0, y: -0.98, z: 0.46000004}
+  m_LocalRotation: {x: -0.2295357, y: -0.08032149, z: 0.32037657, w: -0.915544}
+  m_LocalPosition: {x: 0, y: -0.733, z: 0.46000004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 139562363}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 151.852, y: -4495.658, z: -218.57199}
+  m_LocalEulerAnglesHint: {x: 151.851, y: 180, z: -218.573}
 --- !u!114 &876928032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,52 +340,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
---- !u!1 &1114432316
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1114432317}
-  - component: {fileID: 1114432318}
-  m_Layer: 0
-  m_Name: HeadDir
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1114432317
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114432316}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 19.19, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 509031281}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1114432318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114432316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc47fb4057fab1945b534bff5b808bbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  faceDirObj: {fileID: 1114432316}
-  faceMat: {fileID: 2100000, guid: ef5d8651a200149488a1984a513c9e1c, type: 2}
 --- !u!1001 &1234899138
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -613,6 +567,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: aa0b992bf8a1f5c47985a06982899eca, type: 3}
   m_PrefabInstance: {fileID: 1399201498}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1462430294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1462430295}
+  - component: {fileID: 1462430296}
+  m_Layer: 0
+  m_Name: HeadDir
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1462430295
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1462430294}
+  m_LocalRotation: {x: 0.70702034, y: -0.01106155, z: -0.011061552, w: 0.7070202}
+  m_LocalPosition: {x: 0, y: 0, z: 0.18919995}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 509031281}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -180, y: 0, z: -180}
+--- !u!114 &1462430296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1462430294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc47fb4057fab1945b534bff5b808bbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faceDirObj: {fileID: 1462430294}
+  faceMat: {fileID: 2100000, guid: ef5d8651a200149488a1984a513c9e1c, type: 2}
 --- !u!1 &1510869848 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2054374834570502074, guid: aa0b992bf8a1f5c47985a06982899eca, type: 3}
