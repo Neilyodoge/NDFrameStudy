@@ -30,7 +30,7 @@ Shader "BaseToon/Character"
         [HideInInspector] _FaceFrontDir("_FaceFrontDir",vector) = (1,1,1,1)
         [HideInInspector] _FaceRightDir("_FaceRightDir",vector) = (1,1,1,1)
 
-        _Debug("debug",float) = 1
+        _Debug("debug",range(0,1)) = 1
     }
     SubShader
     {
@@ -145,25 +145,36 @@ Shader "BaseToon/Character"
                 // TODO: 模型拆分眼球和脸部
                 #if defined(_FACE)
                     // face sdf Vector C#输入的是在C#端归一化的
-                    float LoUp = dot(l,_FaceUpDir);     // TODO:这里归一化会有问题不知道是为什么
-                    float LoRight = dot(l,_FaceRightDir);
-                    float3 lightProjectXZDir = normalize(l - _FaceUpDir*LoUp);
-                    float3 lightProjectXYDir = normalize(l - _FaceRightDir * LoRight);
-                    float LPoF = dot(_FaceFrontDir,lightProjectXZDir);
-                    float LPoFAcos = 1-(LPoF*0.5+0.5); //acos(LPoF) / PI; // 其实就是[-1,1]映射到[0,1]
-                    float dotR = dot(_FaceRightDir,lightProjectXZDir);    // 判断左右 不能用xz
-                    float SdfUVFix = (0.5-_FaceSDFMidUVFix) * 2;
+                    float LoUp = dot(l,_FaceUpDir) * 0.5 + 0.5;     // 这里不归一化是因为有可能是负数.*0.5+0.5映射后就可以归一化了
+                    float3 lightProjectXZDir = normalize(l - _FaceUpDir * LoUp);  // 所以这里多*_FaceUpDir也是来处理正负值
+                    float LPXZoF = dot(_FaceFrontDir,lightProjectXZDir);
+                    float LPXZoFAcos = 1-(LPXZoF*0.5+0.5); //acos(LPXZoF) / PI; // 其实就是[-1,1]映射到[0,1]
+                    float dotR = dot(half3(_FaceRightDir.x,0,_FaceRightDir.z),half3(l.x,0,l.z));    // 判断左右 用xz不受其他轴影响，不用xz范围不对
                     // face sdf Calculate 左右
-                    float faceSdfSign = sign(dotR) * 0.5 + 0.5; // right=0 left=1  0.5也是映射到[0,1]
-                    float2 faceSdfUV = float2(lerp(i.uv.x,1-i.uv.x,faceSdfSign),i.uv.y);    // 这里根据符号来判断左右脸
-                    float faceSdfTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,faceSdfUV).g;
-                    float faceShadow = smoothstep(LPoFAcos-_FaceShadowBlur, LPoFAcos+_FaceShadowBlur, faceSdfTex);
-                    float faceShadowWarmSide = smoothstep(LPoFAcos-_FaceShadowBlur-_FaceShadowWarmBlur, LPoFAcos+_FaceShadowBlur+_FaceShadowWarmBlur, faceSdfTex);
+                    dotR = pow(dotR,0.45);
+                    float faceSdfSXSign = sign(dotR) * 0.5 + 0.5; // right=0 left=1  0.5也是映射到[0,1]
+                    float2 faceSdfUV = float2(lerp(i.uv.x,1-i.uv.x,faceSdfSXSign),i.uv.y);    // 这里根据符号来判断左右脸
+                    float faceSdfZYTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,faceSdfUV).g;
+                    float faceShadowZY = smoothstep(LPXZoFAcos-_FaceShadowBlur, LPXZoFAcos+_FaceShadowBlur, faceSdfZYTex);
+                    float faceShadowWarmSide = smoothstep(LPXZoFAcos-_FaceShadowBlur-_FaceShadowWarmBlur, LPXZoFAcos+_FaceShadowBlur+_FaceShadowWarmBlur, faceSdfZYTex);
                     float faceSdfMask = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,i.uv).r;
-                    smoothNol = faceShadow * faceSdfMask;
-                    warmSideNol = faceShadowWarmSide * faceSdfMask;
+                    float faceSdfMaskZY = 1-step(faceSdfMask,0.9);
+                    float faceSdfMaskSX = 1-step(faceSdfMask,0.1);
+                    smoothNol = faceShadowZY * faceSdfMaskZY;
+                    warmSideNol = faceShadowWarmSide * faceSdfMaskZY;
                     // face sdf Calculate 上下
-                    //float 
+                    float LoRight = dot(l,_FaceRightDir)*0.5+0.5;   // 这里normalize会导致下半部分少采一小部分
+                    float3 lightProjectXYDir = normalize(l - _FaceRightDir * LoRight);
+                    float LPXYoF = dot(_FaceFrontDir,lightProjectXYDir);
+                    float LPXYoFAcos = 1-LPXYoF;  // 背面是黑色，这里是关键
+                    float dotU = dot(_FaceUpDir,half3(l.x,l.y,0));
+                    float faceSdfZYSign = sign(dotU); // dotU正好把up和front放在整数，front和down放在负数
+                    float2 faceSdfSXTex = SAMPLE_TEXTURE2D(_FaceSdf,sampler_FaceSdf,i.uv).ba;
+                    float faceSdfS = smoothstep(dotU-_FaceShadowBlur,dotU+_FaceShadowBlur,faceSdfSXTex.x);
+                    float faceSdfX = smoothstep((-dotU)-_FaceShadowBlur,(-dotU)+_FaceShadowBlur,faceSdfSXTex.y);
+                    float faceSdfSX = saturate(lerp(faceSdfX,faceSdfS,faceSdfZYSign) * saturate(sign(LPXYoF)));    // 背面是黑色的 用LPXYoF来算
+                    return half4(smoothNol.rrr,1);
+                    smoothNol = faceSdfSX;
                 #endif
 
                 // ramp

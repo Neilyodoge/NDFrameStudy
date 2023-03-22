@@ -125,8 +125,8 @@ Material:
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _FaceSDFMidUVFix: 0.5
-    - _FaceShadowBlur: 0.02
-    - _FaceShadowWarmBlur: 0.01
+    - _FaceShadowBlur: 0
+    - _FaceShadowWarmBlur: 0
     - _FaceShadowWarmSide: 0.02
     - _GlossMapScale: 0
     - _Glossiness: 0

@@ -34,7 +34,6 @@ public class SDFFaceDir : MonoBehaviour
         
         faceMat.SetVector("_FaceUpDir", Vector3.Normalize(faceUpDir));
         faceMat.SetVector("_FaceFrontDir", Vector3.Normalize(faceFrontDir));
-        Debug.Log(faceMat.GetFloat("_FaceFrontDir"));
         faceMat.SetVector("_FaceRightDir", Vector3.Normalize(faceRightDir));
 
         #region Debug
