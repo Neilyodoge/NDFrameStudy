@@ -39,10 +39,11 @@ half _DepthForCol;
 half4 _WaterDepthWSColor;
 half _fresnelScale;
 half4 _fresnelColor;
-float _SparkleParaIntnesity,_SparkleIntensity,_SparkleParaIntnesityMul;
+float _SparkleParaIntnesity,_SparkleIntensity,_SparkleParaIntnesityMul,_SparkleScale;
 float4 _SparkleSpeed,_SparkleTint;
 
 //feature
+float _DebugProp;
 int _UseRamp,_UseBlend,_UseWaterSide;
 int _CustomSunPosON;
 float4 _CustSunPos;
@@ -110,15 +111,6 @@ float3 GerstnerWave(float4 wave, float3 p, inout float3 tangent, inout float3 bi
     a * sin(f),
     d.y * (a * cos(f))
     );
-}
-
-// GGX高光
-half GGX_HeighLight(half r,half NoH,half3 LoH)
-{
-	half r2 = r * r;
-	half part = (r2 - 1) * NoH * NoH + 1;
-	half spe = r2 / ((4*r + 2) * part * part * LoH * LoH);
-	return spe;
 }
 
 #endif

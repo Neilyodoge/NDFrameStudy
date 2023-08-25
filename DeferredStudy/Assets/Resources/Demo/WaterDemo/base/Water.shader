@@ -34,7 +34,7 @@ Shader "Neilyodog/Water"
 
         [Space(10)]
         [Header(Normal)]
-        _flatNormal("法线平整距离",range(0,0.05)) = 0
+        _flatNormal("法线平整距离",range(0,0.1)) = 0
         _BumpTex ("Normal", 2D) = "white" { }
         _WaterBumpScale ("法线强度", range(0, 2)) = 0.5
         _NormalSpeed ("法线速度", Vector) = (0, 0, 0, 0)    // xy:Normal  zw:DetailNormal
@@ -58,13 +58,12 @@ Shader "Neilyodog/Water"
         [Space(10)]
         [Header(Sparkle)]
         [HDR]_SparkleTint("闪烁颜色",color) = (1,1,1,1)
+        _SparkleScale("闪烁范围",range(0.1,1)) = 0.8
         _SparkleTex("闪烁贴图",2D) = "white"{}
         _SparkleParaIntnesity("闪烁视差强度",float) = 1
         _SparkleParaIntnesityMul("闪烁多层视差强度",float) = 1
         _SparkleIntensity("闪烁亮度",float) = 1
         _SparkleSpeed("闪烁速度",vector) = (0,0,0,0)
-
-        [Space(10)]
         [Header(HighLight)]
         [HDR]_CartoonSpecular ("Toon高光颜色",color) = (1, 1, 1, 1)
         _CartoonSpecularRoughness ("Toon高光粗糙度",float) = 0.5
@@ -100,6 +99,7 @@ Shader "Neilyodog/Water"
         _DampSide ("潮湿范围", float) = 0.32
         _FoamHeight ("水边高度修正值", float) = 1  // 用来锁定waterside的范围
 
+        _DebugProp("Debug", Float) = 0
         [HideInInspector]_Debug("Debug", Float) = 1
         
     }

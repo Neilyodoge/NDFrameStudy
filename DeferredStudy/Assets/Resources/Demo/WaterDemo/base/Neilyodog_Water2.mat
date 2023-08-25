@@ -83,7 +83,8 @@ Material:
     - _CausticScale: 1
     - _CustomSunPosON: 0
     - _DampSide: 0.03
-    - _Debug: 9
+    - _Debug: 6
+    - _DebugProp: 0
     - _DepthForCol: -1.44
     - _DepthIntensity: 1.39
     - _DetailBumpScale: 1
@@ -99,9 +100,10 @@ Material:
     - _ShadowMask: 0.175
     - _ShadowOn: 0
     - _Smoothness: 200
-    - _SparkleIntensity: 4
-    - _SparkleParaIntnesity: 6.06
+    - _SparkleIntensity: 2.55
+    - _SparkleParaIntnesity: 2.8
     - _SparkleParaIntnesityMul: 8.34
+    - _SparkleScale: 0.8
     - _Specular: 0.83
     - _Test: -24.6
     - _UseBlend: 1

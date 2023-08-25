@@ -155,13 +155,16 @@ half4 frag(Varyings i): SV_Target
     ToonSpecular = ToonSpecular * max(i.vecterAnim,0.1);   // 这里跟顶点动画强度做了个运算。max是为了在顶点动画强度为0的时候也有效果
     //混合两种高光
     specular = max(ToonSpecular,specular);
+    // 将闪点归纳成高光的一部分,且范围比高光大一些
+    float SparklePartMask = pow(specular,_SparkleScale);
 
     // Sparkle
-    half3 viewDirTS = GetViewDirectionTangentSpace(float4(i.tangentWS,-1),i.normalWS,i.PositionWSnoOffset);
-    float2 ParallaxUV = ParallaxMapping(viewDirTS,_SparkleParaIntnesity,i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw);
-    float2 ParallaxUV2 = ParallaxMapping(viewDirTS,_SparkleParaIntnesityMul,i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw);
-    float ParallaxTex = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,(ParallaxUV + frac(_Time.y * _SparkleSpeed.r)) * _SparkleTex_ST.xy + _SparkleTex_ST.zw).r;
-    float ParallaxTex2 = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,(ParallaxUV2 + frac(_Time.y * _SparkleSpeed.g)) * _SparkleTex_ST.xy + _SparkleTex_ST.zw).r;
+    half3 viewDirTS = GetViewDirectionTangentSpace(float4(i.tangentWS,-1),i.normalWS,V);
+    float2 baseSparkleUV = i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw ;// + ParallaxMapping(viewDirTS,_SparkleParaIntnesity);
+    float2 parallaxSparkleUV1 = i.uv + viewDirTS.xy * _SparkleParaIntnesity;//
+    float2 ParallaxUV2 =i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw + ParallaxMapping(viewDirTS,_SparkleParaIntnesityMul);
+    float ParallaxTex = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,baseSparkleUV);//(baseSparkleUV + frac(_Time.y * _SparkleSpeed.r))).r;
+    float ParallaxTex2 = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,parallaxSparkleUV1);//(ParallaxUV2 + frac(_Time.y * _SparkleSpeed.g))).r;
     float SparklePart = saturate(pow(ParallaxTex * ParallaxTex2,_SparkleIntensity));
 
     // Refection
@@ -193,7 +196,7 @@ half4 frag(Varyings i): SV_Target
     Tint.rgb = lerp(camColorTex, Tint, _WaterAlpha);                                                        // 扭曲部分颜色强度
     Tint.rgb = lerp(Tint.rgb, _FoamTint.rgb, (1 - foam) * _FoamTint.a);                                     // 叠加Foam,a控制强度
     Tint.rgb += lerp(specular * _ShadowColor.a, specular, shadowPart);                                      // 加入高光部分,_ShadowColor.a控制“阴影内高光”强度。闪点叠加在这里了
-    Tint.rgb += lerp(0,SparklePart * _SparkleTint.rgb,specular);                                            // 在高光部分加入闪点
+    Tint.rgb += lerp(0,SparklePart * _SparkleTint.rgb,SparklePartMask);                                     // 在高光部分加入闪点
     Tint.rgb += lerp(finalCaustic.rgb * _ShadowColor.a,finalCaustic.rgb,shadowPart);                        // 加入焦散。焦散不能放在camColorTex一起是因为camColorTex占比很低
     Tint.rgb = lerp(_ShadowColor.rgb * Tint.rgb, Tint.rgb, shadowPart);                                     // 叠加接受阴影
     Tint.rgb = lerp(Tint.rgb,max(Tint.rgb, _fresnelColor.rgb * SH * _fresnelColor.a), fresnelPart);         // 叠加菲尼尔
