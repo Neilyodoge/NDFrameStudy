@@ -38,9 +38,10 @@ Material:
     - _BlendIntensity: 0.3
     - _BlendNoiseIntensity: 0
     - _Metallic: 0
+    - _RotBase: 1
     - _Roughness: 0
     - _Tiling: 0.24
-    - _TilingBase: 1
+    - _TilingBase: 0.42
     - _TilingNoise: 1
     - _TriplanarBlendSharpness: 4
     m_Colors:
