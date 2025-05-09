@@ -28,6 +28,14 @@ Material:
         m_Texture: {fileID: 2800000, guid: 7306624a8943bd1429c77ea956ffe16a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Noise2:
+        m_Texture: {fileID: 2800000, guid: ea61f65990c013f4687248436f47e7d6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextureSample9:
+        m_Texture: {fileID: 2800000, guid: ea61f65990c013f4687248436f47e7d6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -44,7 +52,13 @@ Material:
     - _TilingBase: 0.42
     - _TilingNoise: 1
     - _TriplanarBlendSharpness: 4
+    - _VoTiling2: 0.36
+    - _VoronoiMask: 8.32
+    - _VoronoiScale: 0.49
+    - _VoronoiSideMask: 1.02
+    - _angle: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.8171851, b: 0.65, a: 1}
+    - _Color0: {r: 0.2830189, g: 0.0955856, b: 0.0955856, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
