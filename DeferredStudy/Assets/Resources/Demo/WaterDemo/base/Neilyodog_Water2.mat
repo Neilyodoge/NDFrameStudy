@@ -12,6 +12,7 @@ Material:
   m_ValidKeywords:
   - _WATERSIDE
   m_InvalidKeywords:
+  - _CUSTOMSUNPOSON_ON
   - _NOTILING
   - _USEBLEND_ON
   m_LightmapFlags: 4
@@ -81,7 +82,7 @@ Material:
     - _CausticFacade: 0.1
     - _CausticIntensity: 15
     - _CausticScale: 1
-    - _CustomSunPosON: 0
+    - _CustomSunPosON: 1
     - _DampSide: 0.03
     - _Debug: 6
     - _DebugProp: 0
@@ -120,7 +121,7 @@ Material:
     - _waveSpeed: 1
     m_Colors:
     - _CartoonSpecular: {r: 1.2156863, g: 1.3333334, b: 1.4980392, a: 1}
-    - _CustSunPos: {r: 0, g: 0, b: 0, a: 0}
+    - _CustSunPos: {r: 40.86, g: 2.97, b: -0.21, a: 0}
     - _DetailNormalSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _DistortionSpeed: {r: -0.1, g: -0.01, b: -0.1, a: -0.1}
     - _FoamSpeed: {r: 0.05, g: 0.1, b: -0.05, a: 0.02}

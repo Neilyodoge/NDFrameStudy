@@ -162,7 +162,7 @@ half4 frag(Varyings i): SV_Target
     half3 viewDirTS = GetViewDirectionTangentSpace(float4(i.tangentWS,-1),i.normalWS,V);
     float2 baseSparkleUV = i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw ;// + ParallaxMapping(viewDirTS,_SparkleParaIntnesity);
     float2 parallaxSparkleUV1 = i.uv + viewDirTS.xy * _SparkleParaIntnesity;//
-    float2 ParallaxUV2 =i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw + ParallaxMapping(viewDirTS,_SparkleParaIntnesityMul);
+    //float2 ParallaxUV2 =i.uv * _SparkleTex_ST.xy + _SparkleTex_ST.zw + ParallaxMapping(viewDirTS,_SparkleParaIntnesityMul);
     float ParallaxTex = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,baseSparkleUV);//(baseSparkleUV + frac(_Time.y * _SparkleSpeed.r))).r;
     float ParallaxTex2 = SAMPLE_TEXTURE2D(_SparkleTex,sampler_SparkleTex,parallaxSparkleUV1);//(ParallaxUV2 + frac(_Time.y * _SparkleSpeed.g))).r;
     float SparklePart = saturate(pow(ParallaxTex * ParallaxTex2,_SparkleIntensity));
