@@ -44,13 +44,17 @@ float4 _SparkleSpeed,_SparkleTint;
 
 //feature
 float _DebugProp;
-int _UseRamp,_UseBlend,_UseWaterSide;
+int /*_UseRamp,_UseBlend,*/_UseWaterSide;
 int _CustomSunPosON;
 float4 _CustSunPos;
 float4 _SS;
+#if defined(_PANARREF_ON)
+    float4 _PlanarReflectionTexture_TexelSize;
+    float _RefIntensity;
+#endif
 CBUFFER_END
 
-TEXTURE2D(_ramp);     SAMPLER(sampler_ramp);
+//TEXTURE2D(_ramp);     SAMPLER(sampler_ramp);
 TEXTURE2D(_VertexAnim);     SAMPLER(sampler_VertexAnim);
 TEXTURE2D(_BumpTex);        SAMPLER(sampler_BumpTex);
 TEXTURE2D(_DetailBumpTex);        SAMPLER(sampler_DetailBumpTex);
@@ -61,6 +65,8 @@ TEXTURE2D(_CameraOpaqueTexture);    SAMPLER(sampler_CameraOpaqueTexture);
 TEXTURECUBE(_RefectionTex);         SAMPLER(sampler_RefectionTex);
 TEXTURE2D(_CausticTex);             SAMPLER(sampler_CausticTex);
 TEXTURE2D(_SparkleTex);             SAMPLER(sampler_SparkleTex);
+TEXTURE2D(_PlanarReflectionTexture);
+            SAMPLER(sampler_PlanarReflectionTexture);
 
 // 图片就不用一定是Normal格式了
 float3 TransformTangentToWorldNormal(float3x3 TBN, float4 normalTex ,float NormalScale)

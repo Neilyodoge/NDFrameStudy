@@ -181,19 +181,26 @@ half4 frag(Varyings i): SV_Target
     float waterSide = depthWater * ((i.PositionWS.y - _FoamHeight) * sin((_Time.y * _FoamSpeed.y) * 10)/10+1);
     waterSide = smoothstep(0,_FoamSide,waterSide) * max((1-i.vecterAnim),depthDistortionWater);
 
-    // color blend
+    // color blend 
+        // Alpha blend
     half4 Tint = half4(0,0,0,1);
-    Tint.rgb = lerp(_WaterSideColor.rgb, _WaterColor.rgb, saturate(depthDistortionWater));                        // 深水区浅水区颜色区分,这里不限制的话return会有问题
-    Tint.rgb = lerp(Tint.rgb,_WaterDepthWSColor, saturate(depthDistortionWater + _DepthForCol) * _WaterDepthWSColor.a); // 根据深度给染色不同效果,前面这样混合效果最好
-    half3 NoLColorBlend = 0; // init
-    UNITY_BRANCH
-    if(_UseRamp < 0.5)  // 区分用ramp混还是用前面的颜色混
-        NoLColorBlend = lerp(_WaterDepthWSColor.rgb * _WaterDepthWSColor.a,_WaterSideColor, NoL);   // 根据NoL混合颜色
-    else
-        NoLColorBlend = SAMPLE_TEXTURE2D(_ramp,sampler_ramp,float2(NoL * 0.5 +0.5,0.1));            // 半兰伯特过度自然，ramp更可控
-    float3 outputBlend = (Tint.rgb+NoLColorBlend)/2;                                                        // 根据NoL混色
-    Tint.rgb = lerp(Tint.rgb,outputBlend,_UseBlend);                                                        
-    Tint.rgb = lerp(camColorTex, Tint, _WaterAlpha);                                                        // 扭曲部分颜色强度
+    Tint = lerp(_WaterSideColor, _WaterColor, saturate(depthDistortionWater));                        // 深水区浅水区颜色区分,这里不限制的话return会有问题
+    Tint = lerp(Tint,_WaterDepthWSColor, saturate(depthDistortionWater + _DepthForCol) );             // 根据深度给染色不同效果,前面这样混合效果最好
+
+    #if defined(_PANARREF_ON)
+        half4 RefTex = SAMPLE_TEXTURE2D(_PlanarReflectionTexture,sampler_PlanarReflectionTexture,opaqueUV);
+        Tint.rgb = lerp(Tint.rgb,RefTex.rgb,_RefIntensity);
+    #endif
+    //half3 NoLColorBlend = 0; // init
+    //UNITY_BRANCH
+    //if(_UseRamp < 0.5)  // 区分用ramp混还是用前面的颜色混
+        //NoLColorBlend = lerp(_WaterDepthWSColor.rgb * _WaterDepthWSColor.a,_WaterSideColor, NoL);   // 根据NoL混合颜色
+    // else
+    //     NoLColorBlend = SAMPLE_TEXTURE2D(_ramp,sampler_ramp,float2(NoL * 0.5 +0.5,0.1));            // 半兰伯特过度自然，ramp更可控
+    //float3 outputBlend = (Tint.rgb+NoLColorBlend)/2;                                                        // 根据NoL混色
+    //Tint.rgb = lerp(Tint.rgb,outputBlend,_UseBlend);        
+    //return Tint;
+                                            
     Tint.rgb = lerp(Tint.rgb, _FoamTint.rgb, (1 - foam) * _FoamTint.a);                                     // 叠加Foam,a控制强度
     Tint.rgb += lerp(specular * _ShadowColor.a, specular, shadowPart);                                      // 加入高光部分,_ShadowColor.a控制“阴影内高光”强度。闪点叠加在这里了
     Tint.rgb += lerp(0,SparklePart * _SparkleTint.rgb,SparklePartMask);                                     // 在高光部分加入闪点
@@ -216,7 +223,8 @@ half4 frag(Varyings i): SV_Target
             Tint.rgb = damp;
             break;
             case 1: // 水23阶深度
-            Tint.rgb = saturate(depthDistortionWater + _DepthForCol);
+            // Tint.rgb = saturate(depthDistortionWater + _DepthForCol);
+            Tint.rgb = _DepthForCol;
             break;
             case 2: // SH
             Tint.rgb = SH;

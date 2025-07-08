@@ -62,6 +62,8 @@ LitFragmentOutput frag(v2f i)
     //* wanghaoyu 说是移动端dither不放在前面的话，着色部分也会计算
     half4 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv);
     float3 viewDir = SafeNormalize(GetCameraPositionWS() - i.positionWS.xyz);
+    float clipPart = saturate(1 - abs(dot(i.baseNormal, viewDir)));
+    clip(min((baseColor.a * lerp(1,_CutIntensity,_FlatClip) - clipPart), 0));
     // 这里不用计算clip,prez里计算就可以
     // float clipPart = 1 - abs(dot(i.baseNormal, viewDir));
     // // float3 posObj = TransformObjectToWorld(float3(0,0,0)); 整体dither

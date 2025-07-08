@@ -15,14 +15,14 @@ Shader "Neilyodog/Water"
         [Toggle]_CustomSunPosON("开启自定义sun位置",int) = 0
         _CustSunPos("自定义sun位置",Vector) = (0, 0, 0, 0)
 
-        [Toggle]_UseBlend("开启混色",int) = 1
-        [Toggle]_UseRamp("UseRamp",int) = 1
-        _ramp("ramp",2d) = "black" {}
+        // [Toggle]_UseBlend("开启混色",int) = 1
+        // [Toggle]_UseRamp("UseRamp",int) = 1
+        //_ramp("ramp",2d) = "black" {}
         [Toggle(_NOTILING)]_NoTiling("NoTilingOn",int) = 1
-        _WaterAlpha ("水整体透明度", range(0, 1)) = 0.8    // 其实是和copyColor做lerp
-        _WaterSideColor ("RGB边缘深度颜色A强度", color) = (1, 1, 1, 1)
-        _WaterColor ("水颜色", color) = (1, 1, 1, 1)
-        _WaterDepthWSColor ("深水颜色", color) = (1, 1, 1, 1)
+        //_WaterAlpha ("水整体透明度", range(0, 1)) = 0.8    // 其实是和copyColor做lerp
+        _WaterSideColor ("边缘深度颜色A透明", color) = (1, 1, 1, 1)
+        _WaterColor ("水颜色A透明", color) = (1, 1, 1, 1)
+        _WaterDepthWSColor ("深水颜色A透明", color) = (1, 1, 1, 1)
         _DepthForCol ("深水颜色范围", float) = 1 
 
         [Space(10)]
@@ -101,6 +101,10 @@ Shader "Neilyodog/Water"
 
         _DebugProp("Debug", Float) = 0
         [HideInInspector]_Debug("Debug", Float) = 1
+
+        [Space(20)]
+        [Toggle(_PANARREF_ON)] _PanarRef_ON("Use PlanarReflection",float) = 0
+        _RefIntensity("反射强度",range(0,1)) = 0.5
         
     }
     SubShader
@@ -121,6 +125,7 @@ Shader "Neilyodog/Water"
             // receive shadow
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE // P5要把_CASCADE去掉
             #pragma multi_compile _ _SHADOWS_SOFT // 软阴影
+            #pragma shader_feature_local _PANARREF_ON
 
             // Debug
             #pragma shader_feature _ _DEBUGMODE
