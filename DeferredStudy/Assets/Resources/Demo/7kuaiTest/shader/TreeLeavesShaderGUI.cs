@@ -69,6 +69,8 @@ public class TreeLeavesShaderGUI : ShaderGUI
         MaterialProperty _CustomBloomIntensity = FindProperty("_CustomBloomIntensity", materialProperty);
         MaterialProperty _CustomBloomAlphaOffset = FindProperty("_CustomBloomAlphaOffset", materialProperty);
         MaterialProperty _IsPlant = FindProperty("_IsPlant", materialProperty);
+        MaterialProperty _FlatClip = FindProperty("_FlatClip", materialProperty);
+        MaterialProperty _CutIntensity = FindProperty("_CutIntensity", materialProperty);
         #endregion
 
         #region GUI绘制面板
@@ -78,6 +80,12 @@ public class TreeLeavesShaderGUI : ShaderGUI
         m_BaseProp = EditorGUILayout.BeginFoldoutHeaderGroup(m_BaseProp, "基础参数", EditorStyles.foldoutPreDrop);
         if (m_BaseProp)
         {
+            // 临时加的平面剔除部分
+            materialEditor.ShaderProperty(_FlatClip, "平面剔除开关");
+            materialEditor.ShaderProperty(_CutIntensity, "平面剔除开关");
+
+
+
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             // 显示图片用
             materialEditor.TexturePropertySingleLine(new GUIContent("贴图"), _BaseMap, null);
