@@ -44,6 +44,7 @@ v2f vert(appdata v)
     o.ambient.a = v.color.r;
     o.positionWS = v_posWorld;
     o.positionHCS = mul(UNITY_MATRIX_VP, float4(v_posWorld, 1));
+    o.fogCoord = ComputeFogFactor(o.positionHCS.z);
     return o;
 }
 
@@ -80,6 +81,11 @@ LitFragmentOutput frag(v2f i)
     half3 tintColor = lerp(tintColorRoot, tintColorTop, i.treeParam);
     half3 baseTexColor = baseColor.rgb * lerp(tintColor,1,(int)_DebugProp1.y); // debug对比
     baseColor.rgb = baseTexColor;
+    // 对基础baseTex进行处理
+    
+    baseColor.rgb = lerp(GrayProcess( baseColor.rgb).xxx, baseColor.rgb, _TexSaturate);
+    baseColor.rgb = saturate(baseColor.rgb*_TexBrightness); // 不希望贴图亮度超过1，单纯为了处理贴图
+
 
     // 屏蔽逐instancing差异
     /*
@@ -144,8 +150,8 @@ LitFragmentOutput frag(v2f i)
     f_finalColor.rgb *= lerp(1,_SubSurfaceGain,subSurfaceTerm);                 // 透射
     f_finalColor.rgb += lerp(0,i.ambient.rgb/2 * _refIntensity,refPart);        // 固有色的暗部 + 反射光色
     
-    half gray = 0.21 * f_finalColor.x + 0.72 * f_finalColor.y + 0.072 * f_finalColor.z;
-    f_finalColor.rgb = lerp(float3(gray, gray, gray), f_finalColor.rgb, _saturate);     // 饱和度
+    f_finalColor.rgb = lerp(GrayProcess(f_finalColor.rgb).xxx, f_finalColor.rgb, _saturate);     // 饱和度
+    f_finalColor.rgb = MixFog(f_finalColor.rgb,i.fogCoord);
     f_finalColor.a = baseColor.a;
 
     // HardRim

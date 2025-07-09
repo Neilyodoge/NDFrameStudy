@@ -71,6 +71,8 @@ public class TreeLeavesShaderGUI : ShaderGUI
         MaterialProperty _IsPlant = FindProperty("_IsPlant", materialProperty);
         MaterialProperty _FlatClip = FindProperty("_FlatClip", materialProperty);
         MaterialProperty _CutIntensity = FindProperty("_CutIntensity", materialProperty);
+        MaterialProperty _TexSaturate = FindProperty("_TexSaturate", materialProperty);
+        MaterialProperty _TexBrightness = FindProperty("_TexBrightness", materialProperty);
         #endregion
 
         #region GUI绘制面板
@@ -84,6 +86,8 @@ public class TreeLeavesShaderGUI : ShaderGUI
             materialEditor.ShaderProperty(_FlatClip, "平面剔除开关");
             materialEditor.ShaderProperty(_CutIntensity, "平面剔除开关");
 
+            materialEditor.ShaderProperty(_TexSaturate, "贴图饱和度");
+            materialEditor.ShaderProperty(_TexBrightness, "贴图亮度");
 
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);

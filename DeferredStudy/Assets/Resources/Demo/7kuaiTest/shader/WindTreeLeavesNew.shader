@@ -22,6 +22,10 @@ Shader "Athena/Foliage/StylizedWindTreeLeavesNew"
         [HideInInspector]_CutIntensity ("立面剔除强度", Range(0, 1)) = 0.95
         _LocalShadowDepthBias ("影子偏移值", range(-0.3,0.3)) = 0.25
 
+        // 贴图
+        _TexSaturate ("贴图饱和度", range(0, 1)) = 1
+        _TexBrightness ("贴图亮度", range(0, 2)) = 1
+
         //[Header(NPR)]
         _saturate ("饱和度", range(0, 1)) = 1
         _LightIntensity ("亮部强度", range(1, 5)) = 2

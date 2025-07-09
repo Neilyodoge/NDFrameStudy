@@ -70,6 +70,8 @@ half4 _DarkColor;
 half _LightIntensity;
 half _TreeLerpTop;
 half _TreeLerpRoot;
+half _TexSaturate;
+half _TexBrightness;
 CBUFFER_END
 float _SHIntensity;  // Gloab Property
 
@@ -161,6 +163,11 @@ half3 WardSpecularModel(half3 lightDir, half3 viewDir, half3 normal, half roughn
     half3 specular = D * fresnel / (4 * dot(normal, viewDir) * dot(normal, lightDir));
 
     return specular;
+}
+
+half GrayProcess(half3 inputTint)
+{
+    return 0.21 * inputTint.x + 0.72 * inputTint.y + 0.072 * inputTint.z;
 }
 
 #endif
