@@ -99,7 +99,7 @@ Material:
     - _PanarRef_ON: 1
     - _RefIntensity: 0.043
     - _RefectionIntensity: 1
-    - _SHIntensity: 0
+    - _SHIntensity: 1
     - _ShadowMask: 0.175
     - _ShadowOn: 0
     - _Smoothness: 200
