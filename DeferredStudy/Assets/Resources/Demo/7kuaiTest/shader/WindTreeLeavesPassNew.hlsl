@@ -110,7 +110,7 @@ LitFragmentOutput frag(v2f i)
     #endif
     
     half ao = saturate(i.ambient.a / _AORange);
-    float3 L = normalize(light.direction);
+    float3 L = lerp(normalize(light.direction),normalize(_CustSunPos.xyz),_CustomSunPosON);
     float3 V = normalize(_WorldSpaceCameraPos.xyz - i.positionWS.xyz);
     float3 H = normalize(V + L);
     float3 N = normalize(i.normalWS);
@@ -135,15 +135,15 @@ LitFragmentOutput frag(v2f i)
     float ratio = saturate(refDis / _refDis);
     ratio = ratio*ratio*ratio; //pow3
     float refPart = saturate(ratio * (1-pow(refSide,_refScale)));   // pow((1-refSide),_refScale) 用来控制边缘范围
-    // //---高光部分---
-    // float bNoH = dot(N,H);  // 用奇怪的混合方法达到了期望的效果
-    // float heightLightPart = pow(max(0,bNoH),_heightLightSmooth);
-    // heightLightPart = heightLightPart * NoLAndShadow * i.treeParam; // 这里不想高光对GrayPart有影响，所以要用 NoLAndShadow
-    // float3 heightLightTint = _heightLightColor.rgb * lightColor; // 跟lightColor挂钩了，正好夜晚白天的强度不一样
+    //---高光部分---
+    float bNoH = dot(N,H);  // 用奇怪的混合方法达到了期望的效果
+    float heightLightPart = pow(max(0,bNoH),_heightLightSmooth);
+    heightLightPart = heightLightPart * NoLAndShadow * i.treeParam; // 这里不想高光对GrayPart有影响，所以要用 NoLAndShadow
+    float3 heightLightTint = _heightLightColor.rgb * lightColor; // 跟lightColor挂钩了，正好夜晚白天的强度不一样
     
     half4 f_finalColor = float4(baseColor.rgb, 1);                              // 固有色
     f_finalColor.rgb *= lightColor;                                             // 固有色 + 直射光色
-    //f_finalColor.rgb += lerp(0,heightLightTint,heightLightPart);                // 高光
+    f_finalColor.rgb += lerp(0,heightLightTint,heightLightPart);                // 高光
     f_finalColor.rgb *= lerp(_DarkColor.rgb, _LightIntensity,darkPart);         // 固有色 + 暗部
     f_finalColor.rgb += baseTexColor * SHNOL * _SHIntensity;                    // 固有色 + 环境光
     f_finalColor.rgb *= lerp(_AOTint.rgb, 1, ao);                               // AO

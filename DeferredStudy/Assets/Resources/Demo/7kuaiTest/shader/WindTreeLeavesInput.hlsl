@@ -27,7 +27,7 @@ float _FaceLightGrayScale;
 float _ToonCutPos;
 float _SHDarkPart;
 // //heightLight
-// float _heightLightSmooth;
+float _heightLightSmooth;
 //ref
 float _refIntensity;
 float _refDis;
@@ -61,12 +61,14 @@ int4 _DebugProp2;
 //int _DitherON;
 
 int _FlatClip;
-// half4 _heightLightColor;
+int _CustomSunPosON;
+half4 _heightLightColor;
 half4 _AOTint;
 //half4 _HardRimTint;
 half4 _BaseColor;
 half4 _LerpColor;
 half4 _DarkColor;
+half4 _CustSunPos;
 half _LightIntensity;
 half _TreeLerpTop;
 half _TreeLerpRoot;

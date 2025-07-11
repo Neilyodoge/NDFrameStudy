@@ -27,6 +27,7 @@ public class TreeLeavesShaderGUI : ShaderGUI
     private int noDarkGray = 0;
     private int noRefPart = 0;
     private int isPlant = 0;
+    private int customSunPosON = 0;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
     {
@@ -73,6 +74,10 @@ public class TreeLeavesShaderGUI : ShaderGUI
         MaterialProperty _CutIntensity = FindProperty("_CutIntensity", materialProperty);
         MaterialProperty _TexSaturate = FindProperty("_TexSaturate", materialProperty);
         MaterialProperty _TexBrightness = FindProperty("_TexBrightness", materialProperty);
+        MaterialProperty _CustomSunPosON = FindProperty("_CustomSunPosON", materialProperty);
+        MaterialProperty _CustSunPos = FindProperty("_CustSunPos", materialProperty);
+        MaterialProperty _heightLightSmooth = FindProperty("_heightLightSmooth", materialProperty);
+        MaterialProperty _heightLightColor = FindProperty("_heightLightColor", materialProperty);
         #endregion
 
         #region GUI绘制面板
@@ -88,7 +93,9 @@ public class TreeLeavesShaderGUI : ShaderGUI
 
             materialEditor.ShaderProperty(_TexSaturate, "贴图饱和度");
             materialEditor.ShaderProperty(_TexBrightness, "贴图亮度");
-
+            // custom LightDir
+            materialEditor.ShaderProperty(_CustomSunPosON, "CustomLightDir");
+            materialEditor.ShaderProperty(_CustSunPos, "平行光方向");
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             // 显示图片用
@@ -106,6 +113,11 @@ public class TreeLeavesShaderGUI : ShaderGUI
             materialEditor.ShaderProperty(_ToonCutPos, "明暗交界线位置.默认0,特殊需求可以调");
             materialEditor.ShaderProperty(_LightIntensity, "亮部强度");
             materialEditor.ShaderProperty(_DarkColor, "暗部颜色");
+
+            EditorGUILayout.LabelField("------高光部分------");
+            materialEditor.ShaderProperty(_heightLightColor, "高光颜色");
+            materialEditor.ShaderProperty(_heightLightSmooth, "高光范围");
+
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();

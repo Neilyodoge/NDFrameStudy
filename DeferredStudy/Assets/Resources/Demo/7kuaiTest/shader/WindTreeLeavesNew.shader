@@ -6,6 +6,8 @@ Shader "Athena/Foliage/StylizedWindTreeLeavesNew"
 {
     Properties
     {
+        [Toggle]_CustomSunPosON("开启自定义sun位置",int) = 0
+        _CustSunPos("自定义sun位置",Vector) = (0, 0, 0, 0)
         [Toggle]_IsPlant("是盆栽",float) = 0
         [HideInInspector][Toggle]_DitherON("Dither开关",float) = 1
         _DebugProp1("",vector) = (0,0,0,0)
@@ -35,9 +37,9 @@ Shader "Athena/Foliage/StylizedWindTreeLeavesNew"
         _ToonCutPos ("明暗交界线位置", range(-1, 1)) = 0
         _SHDarkPart ("阴影中环境光强度", range(0, 2)) = 1
 
-        // //[Header(HeightLight)]
-        // _heightLightSmooth("高光范围",range(1,100)) = 20
-        // _heightLightColor("高光颜色", Color) = (0, 0, 0, 1)
+        //[Header(HeightLight)]
+        _heightLightSmooth("高光范围",range(1,100)) = 20
+        [HDR]_heightLightColor("高光颜色", Color) = (0, 0, 0, 1)
  
         //[Header(RefPart)]
         _refIntensity ("反射阶强度", range(0, 1)) = 0

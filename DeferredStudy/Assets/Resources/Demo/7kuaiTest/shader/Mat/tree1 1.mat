@@ -39,6 +39,7 @@ Material:
     - _AORange: 0.856
     - _CustomBloomAlphaOffset: 0
     - _CustomBloomIntensity: 1
+    - _CustomSunPosON: 0
     - _CutIntensity: 0.6
     - _Cutoff: 0.5
     - _DitherON: 1
@@ -64,6 +65,7 @@ Material:
     - _WindTexIntensity: 1
     - _WindTexMoveSpeed: 0.1
     - _WindTexScale: 1
+    - _heightLightSmooth: 20
     - _refDis: 35
     - _refIntensity: 0.938
     - _refScale: 0.1
@@ -71,9 +73,11 @@ Material:
     m_Colors:
     - _AOTint: {r: 0.15471691, g: 0.15471691, b: 0.15471691, a: 1}
     - _BaseColor: {r: 0.50476664, g: 0.797, b: 0.32765555, a: 1}
+    - _CustSunPos: {r: 0, g: 1, b: 0, a: 0}
     - _DarkColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
     - _DebugProp1: {r: 0, g: 0, b: 0, a: 0}
     - _DebugProp2: {r: 0, g: 0, b: 0, a: 0}
     - _LerpColor: {r: 0.44705886, g: 0.7058824, b: 0.2901961, a: 1}
     - _WindDirection: {r: 1, g: 0, b: 1, a: 0}
+    - _heightLightColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
