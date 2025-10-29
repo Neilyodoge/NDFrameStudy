@@ -39,7 +39,7 @@ Shader "Athena/Foliage/StylizedWindTreeLeavesNew"
 
         //[Header(HeightLight)]
         _heightLightSmooth("高光范围",range(1,100)) = 20
-        [HDR]_heightLightColor("高光颜色", Color) = (0, 0, 0, 1)
+        _heightLightColor("高光颜色", Color) = (0, 0, 0, 1)
  
         //[Header(RefPart)]
         _refIntensity ("反射阶强度", range(0, 1)) = 0
@@ -120,6 +120,7 @@ Shader "Athena/Foliage/StylizedWindTreeLeavesNew"
             #define _LIGHTPROBE 1
             #define _SUBSURFACE 1
             #define _VERTEXANIMTION 1
+            #pragma multi_compile_fog
 
             // #if defined(SHADER_API_D3D11) || defined(SHADER_API_D3D12) || defined(SHADER_API_D3D11_9X) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_PSSL)
             //     #define IS_PC 1

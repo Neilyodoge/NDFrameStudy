@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: tengman_rao
+  m_Shader: {fileID: 4800000, guid: c6ec19fa067a5ac438fda95664d9f235, type: 3}
+  m_ValidKeywords:
+  - _COLOR2ENABLE_ON
+  - _SECONDCOLOROVERLAYTYPE_ON
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Albedo:
+        m_Texture: {fileID: 2800000, guid: ca342e5cbd9efe94d8b21f57f4b862ad, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SmoothnessTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaCutoff: 0.5
+    - _Anchorthefoliagebase: 0
+    - _B: 1
+    - _ClampMax: 10
+    - _Color2Enable: 1
+    - _EnableWind: 0
+    - _SecondColorFade: -0.15
+    - _SecondColorOffset: -0.53
+    - _SecondColorOverlayType: 1
+    - _Smoothness: 0
+    - _WindForce: 0
+    - _WindSpeed: 0
+    - _WindWavesScale: 0
+    - _WorldScale: 1
+    - _baohedu: 1
+    - _liangdu: 10
+    - _offset: 0.13
+    m_Colors:
+    - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MainColor: {r: 0.32506737, g: 0.4245283, b: 0, a: 1}
+    - _MinTInt: {r: 0.46345505, g: 0.5566038, b: 0, a: 0}
+    - _SecondColor: {r: 0.6315689, g: 0.6862744, b: 0, a: 1}
+  m_BuildTextureStacks: []

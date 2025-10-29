@@ -21,15 +21,19 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _GlassMask:
-        m_Texture: {fileID: 2800000, guid: 387579d1472e874419cd9df535ef772f, type: 3}
+        m_Texture: {fileID: 2800000, guid: d1439e21f70910d4e9b6fcf0b7213cb0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: fe6475ef49985644c83460682b39e2cb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Reflect:
         m_Texture: {fileID: 2800000, guid: ed750aed388163b46a3dcaa49036dcfe, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _noise:
+        m_Texture: {fileID: 2800000, guid: 36827e884e50c5d44930ba24a3c95670, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _texcoord:
@@ -38,13 +42,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Alpha: 0.199
+    - _Alpha: 0.242
     - _AlphaCutoff: 0.5
+    - _Float0: 1
+    - _Float2: 0.46
     - _FresnelBias: 0.05
-    - _FresnelPower: 4
-    - _FresnelScale: 1
-    - _ReflectionIntensity: 0
+    - _FresnelPower: 4.15
+    - _FresnelScale: 22.25
+    - _NoiseTiling: 0.15
+    - _NosieBlend: 0.318
+    - _ReflectionIntensity: 1
     m_Colors:
     - _Center: {r: -8.49, g: 0, b: 2, a: 0}
+    - _Color0: {r: 0.78039217, g: 0.9172955, b: 0.972549, a: 1}
+    - _Color1: {r: 0.30170766, g: 0.48642683, b: 0.548, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

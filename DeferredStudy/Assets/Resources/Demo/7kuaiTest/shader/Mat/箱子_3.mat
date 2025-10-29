@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: "\u7BB1\u5B50_3"
+  m_Shader: {fileID: 4800000, guid: 0426fb4fc5c1ec34da2f3ab4d1006517, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MRO:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mask:
+        m_Texture: {fileID: 2800000, guid: 3a201e66dfc3d09418c0ab7cc93fb507, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Noise:
+        m_Texture: {fileID: 2800000, guid: 4fb18ce6b92b93944b9f4fb936be8e54, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _o:
+        m_Texture: {fileID: 2800000, guid: 2ca29dee34bdfc54ebb50b4b07982e06, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AOIntensity: 1
+    - _AlphaCutoff: 0.5
+    - _Blend: 0
+    - _BlendIntensity: 0.162
+    - _BlendMaskIntensity: 0.5
+    - _BlendNoiseIntensity: 0.632
+    - _Bri: 1
+    - _E: 1
+    - _Float2: 1
+    - _Float4: 0
+    - _Metallic: 0
+    - _Pos: 0
+    - _RotBase: 0
+    - _Roughness: 0
+    - _Tiling: -0.27
+    - _Tiling1: 1
+    - _TilingBase: 0.35
+    - _TilingMask: 0.19
+    - _TilingNoise: 0.46
+    - _TriplanarBlendSharpness: 4
+    - _TriplanarBlendSharpness1: 1
+    - _TriplanarBlendSharpness3: 1
+    - _useLocalTintChange: 0
+    m_Colors:
+    - _AOTint: {r: 0, g: 0, b: 0, a: 0}
+    - _BaseColor: {r: 1, g: 0.91764706, b: 0.72156864, a: 1}
+    - _Color1: {r: 0.29281798, g: 1, b: 0, a: 0}
+    - _Color2: {r: 0.29281798, g: 1, b: 0, a: 0}
+    - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Quadrant: {r: 0, g: 0.5, b: 0, a: 0}
+  m_BuildTextureStacks: []

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BasePBR
-  m_Shader: {fileID: 4800000, guid: da51d4f1174b32044a8b59eb2d8c9884, type: 3}
+  m_Shader: {fileID: 4800000, guid: 7f910b83af0edd249843c3c4e9c3cc06, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -21,27 +21,25 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _B:
-        m_Texture: {fileID: 2800000, guid: 3dc33883e7e34404fa2377eb8026b2ca, type: 3}
-        m_Scale: {x: 10, y: 10}
+        m_Texture: {fileID: 2800000, guid: edccb9eb88fa099448093014558f0b23, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _ma:
-        m_Texture: {fileID: 2800000, guid: af14e8503cc9a1d448e4d390185f496f, type: 3}
-        m_Scale: {x: 10, y: 10}
+    - _MRA:
+        m_Texture: {fileID: 2800000, guid: fe14aff6d64bff14ca0a13095595d7ce, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _n:
-        m_Texture: {fileID: 2800000, guid: 2b32a31eb256d5b40944b1b6ec36eb61, type: 3}
-        m_Scale: {x: 10, y: 10}
-        m_Offset: {x: 0, y: 0}
-    - _texcoord:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: a872f0c567e222844b9e2e146bf9f3d6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AlphaCutoff: 0.5
-    - _Float0: 2.5
-    - _Tiling: 15
-    - _s: 0.497
+    - _Float0: 7.12
+    - _Float1: 0.01
+    - _Tiling: 1
+    - _s: 0
     m_Colors:
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Tint: {r: 0.73800004, g: 0.86365306, b: 1, a: 0}
   m_BuildTextureStacks: []

@@ -136,7 +136,7 @@ LitFragmentOutput frag(v2f i)
     ratio = ratio*ratio*ratio; //pow3
     float refPart = saturate(ratio * (1-pow(refSide,_refScale)));   // pow((1-refSide),_refScale) 用来控制边缘范围
     //---高光部分---
-    float bNoH = dot(N,H);  // 用奇怪的混合方法达到了期望的效果
+    float bNoH = dot(i.baseNormal,H);  // 用奇怪的混合方法达到了期望的效果
     float heightLightPart = pow(max(0,bNoH),_heightLightSmooth);
     heightLightPart = heightLightPart * NoLAndShadow * i.treeParam; // 这里不想高光对GrayPart有影响，所以要用 NoLAndShadow
     float3 heightLightTint = _heightLightColor.rgb * lightColor; // 跟lightColor挂钩了，正好夜晚白天的强度不一样
